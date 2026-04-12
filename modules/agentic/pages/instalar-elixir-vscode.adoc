@@ -1,4 +1,5 @@
 = Configurar VSCode con Elixir y OpenCode
+:icons: font
 
 Este capítulo explica cómo dejar listo tu entorno para trabajar con Elixir y usar agentes de IA.
 
@@ -12,7 +13,11 @@ Antes de comenzar, asegúrate de tener:
 
 == Erlang/OTP
 
-Como Elixir corre sobre la BEAM, hay que instalar Erlang primero.
+[IMPORTANT]
+====
+Erlang debe instalarse *antes* que Elixir. Sin la BEAM (la máquina virtual de Erlang),
+Elixir no puede ejecutarse.
+====
 
 === Windows
 
@@ -71,12 +76,11 @@ sudo dnf install elixir
 
 [source, bash]
 ----
-# Verificar la versión de Erlang
-erl -version
-
-# Verificar la versión de Elixir
-elixir --version
+erl -version  # <1>
+elixir --version  # <2>
 ----
+<1> Muestra la versión de Erlang/OTP instalada.
+<2> Muestra la versión de Elixir y confirma que detecta la BEAM.
 
 Deberías ver algo como:
 
@@ -87,15 +91,11 @@ Erlang/OTP 27 [erts-15.x]
 Elixir 1.18.x (compiled with Erlang/OTP 27)
 ----
 
-También puedes probar el **shell interactivo** de Elixir:
-
-[source, bash]
-----
-iex
-----
-
-Escribe `IO.puts("¡Hola desde Elixir!")` y presiona Enter.
-Para salir de `iex`, presiona `Ctrl+C` dos veces.
+[TIP]
+====
+Prueba el shell interactivo con `iex`. Escribe `IO.puts("¡Hola desde Elixir!")` y presiona Enter.
+Para salir, presiona `Ctrl+C` dos veces.
+====
 
 == Configuración de VS Code
 
@@ -135,18 +135,19 @@ y agrega estas opciones:
 [source, json]
 ----
 {
-  // Formatear automáticamente al guardar
   "[elixir]": {
-    "editor.formatOnSave": true,
-    "editor.defaultFormatter": "JakeBecker.elixir-ls"
+    "editor.formatOnSave": true,  // <1>
+    "editor.defaultFormatter": "JakeBecker.elixir-ls"  // <2>
   },
 
-  // Asociar archivos .heex con Elixir
   "files.associations": {
-    "*.heex": "phoenix-heex"
+    "*.heex": "phoenix-heex"  // <3>
   }
 }
 ----
+<1> Formatea el código automáticamente cada vez que guardas.
+<2> Usa ElixirLS como formateador (respeta `.formatter.exs`).
+<3> Asocia los templates de Phoenix para tener resaltado de sintaxis.
 
 == OpenCode desktop
 
@@ -154,12 +155,17 @@ Es un agente de código que te ayuda a escribir y depurar código desde una inte
 
 === Características
 
-* **Multi-Proveedor**: Compatible con más de 75 proveedores de LLM, incluyendo OpenAI, Anthropic, Google Gemini, Groq, y modelos locales.
-* **Aplicación de escritorio**: Interfaz gráfica con chat, revisión de cambios y navegación de archivos.
-* **Integración LSP**: Carga automáticamente los Language Servers (como ElixirLS) para darle contexto al modelo.
-* **Multi-sesión**: Puedes tener múltiples agentes trabajando en paralelo sobre el mismo proyecto.
-* **GitHub Copilot**: Puedes iniciar sesión con tu cuenta de GitHub para usar tu plan de Copilot.
-* **Privacidad**: OpenCode no almacena tu código ni datos de contexto.
+* icon:plug[] Multi-Proveedor: Compatible con más de 75 proveedores de LLM.
+* icon:desktop[] Aplicación de escritorio: Interfaz gráfica con chat, revisión de cambios y navegación de archivos.
+* icon:code[] Integración LSP: Carga automáticamente los Language Servers (como ElixirLS) para darle contexto al modelo.
+* icon:clone[] Multi-sesión: Puedes tener múltiples agentes trabajando en paralelo sobre el mismo proyecto.
+* icon:github[] GitHub Copilot: Puedes iniciar sesión con tu cuenta de GitHub para usar tu plan de Copilot.
+* icon:lock[] Privacidad: OpenCode no almacena tu código ni datos de contexto.
+
+[NOTE]
+====
+*Opinión Personal*: OpenCode es como Google Antigravity pero con más opciones de configuración y modelos disponibles, además de ser open source.
+====
 
 === Instalación
 
@@ -168,7 +174,7 @@ Es un agente de código que te ayuda a escribir y depurar código desde una inte
 Descarga el instalador directamente desde la web oficial:
 
 1. Ve a https://opencode.ai/download[opencode.ai/download]
-2. Descarga el instalador para **Windows (x64)**
+2. Descarga el instalador para Windows (x64)
 3. Ejecuta el archivo `.exe` y sigue las instrucciones
 
 También puedes instalar la versión de línea de comandos con:
@@ -179,20 +185,11 @@ También puedes instalar la versión de línea de comandos con:
 choco install opencode
 ----
 
-.Usando Scoop
-[source, powershell]
-----
-scoop install opencode
-----
-
-.Usando NPM
-[source, powershell]
-----
-npm install -g opencode-ai
-----
-
 ==== Linux
 
+.icon:chevron-down[] Instalación en Linux (click para expandir)
+[%collapsible]
+======
 Descarga el paquete `.deb` o `.rpm` desde https://opencode.ai/download[opencode.ai/download],
 o instala la versión de línea de comandos:
 
@@ -208,23 +205,20 @@ brew install anomalyco/tap/opencode
 curl -fsSL https://opencode.ai/install | bash
 ----
 
-.Usando NPM
-[source, bash]
-----
-npm install -g opencode-ai
-----
-
 .Arch Linux
 [source, bash]
 ----
 sudo pacman -S opencode
 ----
+======
 
 === Configuración
 
-Al abrir OpenCode por primera vez, te pedirá configurar un proveedor de IA.
-La forma más rápida es usar el comando `/connect` dentro de la aplicación y
-seleccionar tu proveedor preferido.
+[TIP]
+====
+La forma más rápida de configurar OpenCode es usar el comando `/connect` dentro de la aplicación.
+Te guiará paso a paso para conectar tu proveedor de IA preferido.
+====
 
 ==== Configuración manual
 
@@ -240,28 +234,26 @@ Ejemplo para usar con Anthropic:
 {
   "providers": {
     "anthropic": {
-      "apiKey": "tu-api-key-aqui",
+      "apiKey": "tu-api-key-aqui",  // <1>
       "disabled": false
     }
   },
   "lsp": {
     "elixir": {
-      "command": "elixir-ls"
+      "command": "elixir-ls"  // <2>
     }
   }
 }
 ----
+<1> Reemplaza con tu API key real. Nunca la subas a un repositorio público.
+<2> Conecta ElixirLS para que el agente entienda tu código Elixir.
 
 [NOTE]
 ====
-Las API keys también se pueden configurar como **variables de entorno**:
+Las API keys también se pueden configurar como variables de entorno:
+`ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `GEMINI_API_KEY`, `GROQ_API_KEY`.
 
-* `ANTHROPIC_API_KEY`
-* `OPENAI_API_KEY`
-* `GEMINI_API_KEY`
-* `GROQ_API_KEY`
-
-Si tienes **GitHub Copilot**, puedes iniciar sesión directamente desde OpenCode
+Si tienes GitHub Copilot, puedes iniciar sesión directamente desde OpenCode
 sin necesidad de configurar API keys adicionales.
 ====
 
@@ -274,7 +266,7 @@ Al abrir OpenCode en tu proyecto de Elixir, verás una interfaz de chat donde pu
 * Escribir preguntas sobre tu código
 * Pedir que genere funciones en Elixir
 * Solicitar depuración de errores
-* Cambiar entre modo **Build** (hace cambios) y **Plan** (solo sugiere) usando la tecla `Tab`
+* Cambiar entre modo *Build* (hace cambios) y *Plan* (solo sugiere) usando la tecla `Tab`
 * Usar `@` para referenciar archivos específicos del proyecto
 * Deshacer cambios con el comando `/undo`
 
@@ -317,9 +309,24 @@ image::opencode-free-models.png[Modelos gratuitos en OpenCode Zen]
 
 Dentro de la aplicación, en el selector de modelos, encontrarás varias opciones gratuitas:
 
-* **Big Pickle**: Ideal para tareas generales.
-* **MiniMax M2.5 Free**: Muy equilibrado para programación.
-* **Nemotron 3 Super Free**: Excelente rendimiento en tareas complejas.
+[cols="1,2,2", options="header"]
+|===
+| Modelo
+| Punto Fuerte
+| Uso Ideal
+
+| Big Pickle
+| Versatilidad general
+| Tareas variadas, exploración de código
+
+| MiniMax M2.5 Free
+| Equilibrio velocidad/calidad
+| Programación diaria, refactorización
+
+| Nemotron 3 Super Free
+| Alto rendimiento
+| Tareas complejas, análisis profundo
+|===
 
 Para usarlos, solo tienes que seleccionarlos en el menú desplegable de modelos dentro de OpenCode.
 
@@ -332,11 +339,11 @@ capacidad de procesamiento (mínimo 16GB de RAM recomendados).
 
 [source, bash]
 ----
-# Instalar un modelo
-ollama pull llama3.2
-
-# OpenCode se conecta automáticamente al endpoint local
+ollama pull llama3.2  # <1>
+# OpenCode se conecta automáticamente al endpoint local  # <2>
 ----
+<1> Descarga el modelo Llama 3.2 (~4GB). Solo necesitas hacerlo una vez.
+<2> OpenCode detecta Ollama en `localhost:11434` sin configuración adicional.
 
 [NOTE]
 ====
