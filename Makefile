@@ -1,6 +1,6 @@
 .PHONY: install build server sh antora.build
 BUILD=docker
-CONTAINER_LABEL=local/antora:example-docs
+CONTAINER_LABEL=local/antora:elixir-ml
 
 install i:
 	${BUILD} build -t ${CONTAINER_LABEL} .

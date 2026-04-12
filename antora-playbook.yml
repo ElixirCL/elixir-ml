@@ -1,6 +1,6 @@
 site:
-  title: Example Documentation
-  url: https://ninjascl.github.io/antora-docs-bootstrap
+  title: Elixir ML & LLM
+  url: https://elixircl.github.io/elixir-ml
   start_page: "ROOT::index.adoc"
 
 content:

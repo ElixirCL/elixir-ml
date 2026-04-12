@@ -1,5 +1,5 @@
 name: ROOT
 version: ~
-title: Example Documentation
+title: Elixir ML & LLM
 nav:
   - modules/ROOT/nav.adoc
