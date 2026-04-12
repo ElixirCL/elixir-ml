@@ -350,10 +350,6 @@ Dentro de la aplicación, en el selector de modelos, encontrarás varias opcione
 | MiniMax M2.5 Free
 | Equilibrio velocidad/calidad
 | Programación diaria, refactorización
-
-| Nemotron 3 Super Free
-| Alto rendimiento
-| Tareas complejas, análisis profundo
 |===
 
 Para usarlos, solo tienes que seleccionarlos en el menú desplegable de modelos dentro de OpenCode.
