@@ -4,7 +4,9 @@ defmodule EventTimer.AutoStart do
   """
 
   def get_app_path do
-    "C:\\Users\\USER\\Documents\\Apuntes_Elixir_Libro\\elixir-ml\\event_timer\\_build\\prod\\rel\\event_timer\\bin\\event_timer.bat"
+    # Calcula la ruta automáticamente basándose en la ubicación del proyecto
+    File.cwd!()
+    |> Path.join("_build/prod/rel/event_timer/bin/event_timer.bat")
   end
 
   def enable_windows do
@@ -35,7 +37,7 @@ defmodule EventTimer.AutoStart do
 
   def enable_mac do
     app_path = get_app_path()
-    plist_path = Path.join(System.get_env("HOME"), "Library/LaunchAgents/com.event_timer.plist")
+    plist_path = Path.join(System.user_home!(), "Library/LaunchAgents/com.event_timer.plist")
 
     plist = """
     <?xml version="1.0" encoding="UTF-8"?>
@@ -64,7 +66,7 @@ defmodule EventTimer.AutoStart do
   end
 
   def disable_mac do
-    plist_path = Path.join(System.get_env("HOME"), "Library/LaunchAgents/com.event_timer.plist")
+    plist_path = Path.join(System.user_home!(), "Library/LaunchAgents/com.event_timer.plist")
     System.cmd("launchctl", ["unload", plist_path])
     File.rm_rf(plist_path)
     true
@@ -99,7 +101,7 @@ defmodule EventTimer.AutoStart do
 
       {:darwin, _} ->
         plist_path =
-          Path.join(System.get_env("HOME"), "Library/LaunchAgents/com.event_timer.plist")
+          Path.join(System.user_home!(), "Library/LaunchAgents/com.event_timer.plist")
 
         File.exists?(plist_path)
 
