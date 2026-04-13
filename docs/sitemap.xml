@@ -1,15 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>https://elixircl.github.io/elixir-ml/agentic/instalar-elixir-vscode.html</loc>
+<lastmod>2026-04-13T23:31:53.302Z</lastmod>
+</url>
+<url>
 <loc>https://elixircl.github.io/elixir-ml/agentic/introduction.html</loc>
-<lastmod>2026-04-12T22:41:02.569Z</lastmod>
+<lastmod>2026-04-13T23:31:53.302Z</lastmod>
 </url>
 <url>
 <loc>https://elixircl.github.io/elixir-ml/example.html</loc>
-<lastmod>2026-04-12T22:41:02.569Z</lastmod>
+<lastmod>2026-04-13T23:31:53.302Z</lastmod>
 </url>
 <url>
 <loc>https://elixircl.github.io/elixir-ml/index.html</loc>
-<lastmod>2026-04-12T22:41:02.569Z</lastmod>
+<lastmod>2026-04-13T23:31:53.302Z</lastmod>
 </url>
 </urlset>
