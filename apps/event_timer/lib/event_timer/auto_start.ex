@@ -10,13 +10,13 @@ defmodule EventTimer.AutoStart do
   end
 
   def enable_windows do
-    app_path = get_app_path()
-    working_dir = Path.dirname(app_path)
+    app_path = get_app_path() |> String.replace("/", "\\")
+    working_dir = get_app_path() |> Path.dirname() |> String.replace("/", "\\")
 
     startup_dir =
       System.get_env("APPDATA") |> Path.join("Microsoft/Windows/Start Menu/Programs/Startup")
 
-    shortcut_path = Path.join(startup_dir, "EventTimer.lnk")
+    shortcut_path = Path.join(startup_dir, "EventTimer.lnk") |> String.replace("/", "\\")
 
     cmd = ~s"""
     powershell -Command "$WshShell = New-Object -ComObject WScript.Shell; $Shortcut = $WshShell.CreateShortcut('#{shortcut_path}'); $Shortcut.TargetPath = '#{app_path}'; $Shortcut.WorkingDirectory = '#{working_dir}'; $Shortcut.Description = 'Event Timer'; $Shortcut.Save()"
