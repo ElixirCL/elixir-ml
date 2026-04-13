@@ -127,28 +127,6 @@ en VSCode.
 code --install-extension livebook.vscode-livebook
 ----
 
-=== Configuración sugerida
-
-Abre tu archivo de configuración (`Ctrl+Shift+P` → _"Open User Settings (JSON)"_)
-y agrega estas opciones:
-
-[source, json]
-----
-{
-  "[elixir]": {
-    "editor.formatOnSave": true,  // <1>
-    "editor.defaultFormatter": "JakeBecker.elixir-ls"  // <2>
-  },
-
-  "files.associations": {
-    "*.heex": "phoenix-heex"  // <3>
-  }
-}
-----
-<1> Formatea el código automáticamente cada vez que guardas.
-<2> Usa ElixirLS como formateador (respeta `.formatter.exs`).
-<3> Asocia los templates de Phoenix para tener resaltado de sintaxis.
-
 === IA en el Editor (Extensiones)
 
 Para muchos desarrolladores, la forma más cómoda de usar IA es directamente dentro del editor. Aquí tienes las mejores opciones para VS Code:
