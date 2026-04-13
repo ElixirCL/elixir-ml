@@ -354,24 +354,33 @@ y cuándo conviene usarlos vs. servicios en la nube, consulta el capítulo
 xref:introduction.adoc[Introducción a la Programación Agéntica].
 ====
 
-== Primeras pruebas
+== Caso de Uso: Construyendo un Temporizador con OpenCode
 
-Crea un archivo `hello.exs` para verificar que todo responda:
+Ahora que tenemos nuestro entorno listo, usaremos OpenCode para crear una aplicación funcional en Elixir. En vez de un simple "Hola Mundo", construiremos un **temporizador de eventos especiales**.
 
-.hello.exs
-[source, elixir]
-----
-# Prueba de entorno
-IO.puts("¡Hola desde Elixir!")
-IO.puts("Versión: #{System.version()}")
-----
+=== El Prompt Inicial
 
-Ejecútalo:
+La ventaja de usar agentes es que podemos describir la lógica compleja que necesitamos antes de escribir código. Ingresamos las siguientes instrucciones en OpenCode:
 
-[source, bash]
-----
-elixir hello.exs
-----
+image::opencode-prompt.png[Prompt utilizado en OpenCode]
+
+Como se observa, solicitamos una app que anote fechas, persista los datos, corra en segundo plano, y cuente con una interfaz para administrar (CRUD) los eventos mostrando notificaciones del sistema.
+
+=== El Resultado
+
+OpenCode genera el proyecto completo (equivalente a `mix new event_timer`), configura las dependencias y estructura la lógica en segundo plano.
+
+image::opencode-app-ui.png[Interfaz de la aplicación Event Timer]
+
+La aplicación final resultante incluye una interfaz clara donde podemos ver los eventos próximos, la cuenta regresiva, y gestionar las fechas importantes.
+
+[NOTE]
+====
+**¿Quieres explorar el código y probarlo?** 
+Para no saturar este artículo, hemos habilitado la carpeta `apps/` en la raíz del repositorio. 
+
+Puedes encontrar todo el código funcional de esta aplicación en: `apps/event_timer`.
+====
 
 == Referencias
 
