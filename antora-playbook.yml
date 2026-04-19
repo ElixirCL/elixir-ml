@@ -6,8 +6,9 @@ site:
 content:
   sources:
     - url: .
-      branches: HEAD
+      branches: main
       start_path: .
+      edit_url: https://github.com/ElixirCL/elixir-ml/edit/main/{path}
 
 antora:
   extensions:

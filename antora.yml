@@ -1,6 +1,7 @@
 name: ROOT
 version: ~
 title: Elixir ML & LLM
+edit_url: https://github.com/ElixirCL/elixir-ml/edit/main/{path}
 nav:
   - modules/ROOT/nav.adoc
   - modules/agentic/nav.adoc
