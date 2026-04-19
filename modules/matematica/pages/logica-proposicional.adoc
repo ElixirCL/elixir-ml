@@ -1,0 +1,90 @@
+= Lógica Proposicional
+:icons: font
+:math: mathjax
+
+Este apéndice establece los cimientos del razonamiento lógico, fundamentales tanto para la matemática pura como para la construcción de algoritmos y agentes de inteligencia artificial.
+
+== ¿Qué es una Proposición?
+
+Una **proposición** es una afirmación de la cual se puede decir, sin ambigüedad, que es verdadera ($V$) o falsa ($F$). En el mundo de la lógica, no nos importa tanto el significado de la frase, sino su **valor de verdad**.
+
+[cols="1,1,1", options="header"]
+|===
+| Expresión | ¿Es Proposición? | Valor de Verdad
+| "Elixir corre sobre la BEAM" | Sí | $V$
+| "$2 + 2 = 5$" | Sí | $F$
+| "¡Hola mundo!" | No | Exclamación
+| "$x + 5 = 10$" | No | Enunciado abierto (depende de $x$)
+|===
+
+[NOTE]
+====
+En programación, las proposiciones son el corazón de las estructuras de control (`if`, `case`, `cond`). Si una expresión no puede evaluarse como booleana, el programa arrojará un error.
+====
+
+== Conectivos Lógicos
+
+Para construir razonamientos complejos, combinamos proposiciones simples mediante **conectivos**.
+
+=== Negación ($\neg$)
+Invierte el valor de verdad. Si $p$ es verdadero, $\neg p$ es falso.
+
+=== Conjunción ($\land$)
+Es el "y" lógico. Solo es verdadera si **ambas** proposiciones lo son.
+
+[source, elixir]
+----
+# Ejemplo en Elixir
+true and false # => false
+----
+
+=== Disyunción ($\lor$)
+Es el "o" lógico. Es verdadera si **al menos una** de las proposiciones lo es.
+
+=== Implicación ($\to$)
+Si $p$, entonces $q$. Solo es falsa cuando el antecedente ($p$) es verdadero y el consecuente ($q$) es falso.
+
+[IMPORTANT]
+====
+La implicación es la base de las reglas de inferencia en sistemas expertos y agentes agénticos: `IF (condición) THEN (acción)`.
+====
+
+== Tablas de Verdad
+
+Las tablas de verdad nos permiten visualizar todas las combinaciones posibles de valores para un conjunto de proposiciones.
+
+=== Tabla de la Implicación ($p \to q$)
+
+[cols="^1,^1,^2", options="header"]
+|===
+| $p$ | $q$ | $p \to q$
+| $V$ | $V$ | $V$
+| $V$ | $F$ | **$F$**
+| $F$ | $V$ | $V$
+| $F$ | $F$ | $V$
+|===
+
+[TIP]
+====
+Fíjate que si el antecedente es Falso ($F$), la implicación siempre es Verdadera ($V$). A esto se le llama **Verdad Vacua**. 
+====
+
+== Leyes de la Lógica (Tautologías)
+
+Existen equivalencias lógicas que son siempre verdaderas. Conocerlas permite optimizar el código y simplificar condiciones complejas.
+
+### Leyes de De Morgan
+Son fundamentales para negar condiciones compuestas:
+
+1.  $\neg(p \land q) \equiv \neg p \lor \neg q$
+2.  $\neg(p \lor q) \equiv \neg p \land \neg q$
+
+[source, elixir]
+----
+# Simplificando con De Morgan
+# En vez de:
+not (user.is_admin and user.is_active)
+# Podemos usar:
+not user.is_admin or not user.is_active
+----
+

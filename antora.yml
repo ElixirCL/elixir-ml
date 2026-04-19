@@ -4,3 +4,4 @@ title: Elixir ML & LLM
 nav:
   - modules/ROOT/nav.adoc
   - modules/agentic/nav.adoc
+  - modules/matematica/nav.adoc
