@@ -2,24 +2,191 @@
 :icons: font
 :stem: mathjax
 
-El álgebra lineal no es solo el estudio de tablas de números; es el marco mediante el cual entendemos cómo transformar y deformar espacios. Cuando añadimos el cálculo a esta mezcla, obtenemos las herramientas necesarias para optimizar funciones complejas en dimensiones masivas.
+Advertencia: El siguiente documento sacrifica rigurosidad matematica para hacer mas accesible su contenido. 
+
+Un sistema de n ecuaciones lineales y m incognitas x_1, ...., x_m, se escribe de la forma
+
+a_11x_1 + a_12x_2 + ... + a_1mx_m = b_1
+a_21x_1 + a_22x_2 + ... + a_2mx_m = b_2
+......................................
+a_n1x_1 + a_n2x_2 + ... + a_nmx_m = b_n
+donde los numeros a_ij y b_i son conocidos.
+
+Se denotara como "sistema n x m" para refernis a un sistema de n ecuaciones lineales con m incognitas.
+
+Dado un sistema de n ecuaciones lineales con m incognitas, se dice que (x_1,x_2,...,x_m) es una solucion del sistema, si satisface cada una de las n ecuaciones. Al conjunto de todas las soluciones posibles de un sistema se le va a denominar conjunto solucion del sistema.
+
+Por ejemplo, imagina que estamos tratando de predecir el precio de una suscripción basándonos en dos factores: el número de usuarios ($x_1$) y el almacenamiento extra ($x_2$). Podríamos tener un sistema como este:
+
+[stem]
+--
+2x_1 + 1x_2 = 15 \\
+1x_1 + 3x_2 = 20
+--
+
+En **Elixir**, usando la librería **Nx**, representaríamos los coeficientes y los resultados como tensores independientes:
+
+[source, elixir]
+----
+# Los coeficientes de la izquierda
+a = Nx.tensor([[2, 1], [1, 3]])
+
+# Los resultados de la derecha
+b = Nx.tensor([15, 20])
+----
+
+Son permitidas tres tipos de operaciones para transformar un sistema a otro, sin modificar el conjunto solucion:
+
+i. Multiplicamos una ecuacion por un numero real.
+ii. Multiplicamos una ecuacion por un numero real Y lo sumamos a otra ecuacion.
+iii. Intercambiamos la posicion de dos ecuaciones.
+
+Dos sistemas de ecuaciones lineales con m incognitas son equivalentes si comparten un conjunto solucion.
+
+Para visualizar esto, piensa en el sistema anterior. Si multiplicamos la primera ecuación por 2, obtenemos $4x_1 + 2x_2 = 30$. Aunque los números "se vean" distintos, la recta que representan en el espacio es exactamente la misma. No hemos perdido ni ganado información, solo hemos cambiado la escala de nuestra observación.
+
+[source, elixir]
+----
+# Multiplicar una fila por un escalar en Nx
+# Supongamos que 'a' es nuestro tensor de coeficientes
+fila_1 = a[0]
+fila_1_escalada = Nx.multiply(fila_1, 2)
+----
+
+En un sistema nx m 
+
+a_11x_1 + a_12x_2 + ... + a_1mx_m = b_1
+a_21x_1 + a_22x_2 + ... + a_2mx_m = b_2
+......................................
+a_n1x_1 + a_n2x_2 + ... + a_nmx_m = b_n
+
+
+Esta estructura rectangular representa una entidad propia, mucho más allá de ser una simple convención de escritura. En matemáticas, la representamos así:
+
+[stem]
+--
+A = \begin{pmatrix}
+a_{11} & a_{12} & \dots & a_{1m} \\
+a_{21} & a_{22} & \dots & a_{2m} \\
+\vdots & \vdots & \ddots & \vdots \\
+a_{n1} & a_{n2} & \dots & a_{nm}
+\end{pmatrix}
+--
+
+Y en el ecosistema de **Elixir**, la creación de este objeto es casi poética por su simplicidad:
+
+[source, elixir]
+----
+alias Nx
+matrix = Nx.tensor([
+  [1, 2, 3],
+  [4, 5, 6],
+  [7, 8, 9]
+])
+----
+
+Una matriz A como esta se dice que es una matriz n x m.
+
+Para resolver un sistema como $Ax = b$, no necesitamos hacer cuentas a mano eternamente. Podemos usar la **Eliminación de Gauss** (llevar la matriz a su forma escalonada) o simplemente dejar que **Nx** haga el trabajo pesado:
+
+[source, elixir]
+----
+# Resolver Ax = b
+# a es la matriz de coeficientes, b el vector de resultados
+solucion = Nx.LinAlg.solve(a, b)
+----
+
+
+El rango de una matriz es el número de filas (o columnas) que son **linealmente independientes**. Es, de alguna forma, la medida de la "información real" que contiene la matriz. Si una fila se puede obtener sumando las otras, esa fila es redundante y no aumenta el rango.
+
+En computación, solemos estimar el rango observando los valores singulares (SVD). Si un valor es muy cercano a cero, esa dimensión es prácticamente despreciable.
+
+[source, elixir]
+----
+# Una forma de ver la 'salud' del rango es vía SVD
+{u, s, vt} = Nx.LinAlg.svd(matrix)
+----
+
+
+No todos los caminos tienen destino. A veces, las ecuaciones se contradicen (como decir que $x=1$ y $x=2$ al mismo tiempo). Geométricamente, esto sucede cuando las rectas o planos son paralelos y nunca se cruzan. En estos casos, el sistema es **inconsistente**.
+
+Es como girar la matriz sobre su diagonal principal. Las filas se convierten en columnas y viceversa. Es una operación fundamental para reorientar datos antes de un producto.
+
+[source, elixir]
+----
+transpuesta = Nx.transpose(matrix)
+# O de forma abreviada
+transpuesta = Nx.t(matrix)
+----
+
+Las matrices se pueden sumar (si tienen la misma forma) elemento a elemento. También se pueden multiplicar por un escalar, lo que "estira" o "encoge" toda la transformación.
+
+[source, elixir]
+----
+suma = Nx.add(matrix_a, matrix_b)
+escalado = Nx.multiply(matrix, 0.5)
+----
+
+Multiplicar dos matrices ($A \cdot B$) no es multiplicar elemento a producto. Es una **composición de transformaciones**. El elemento en la posición $(i, j)$ es el producto punto de la fila $i$ de $A$ por la columna $j$ de $B$.
+
+[IMPORTANT]
+====
+El orden importa: $A \cdot B \neq B \cdot A$. En el mundo de las transformaciones, no es lo mismo girar y luego mover, que mover y luego girar.
+====
+
+[source, elixir]
+----
+producto = Nx.dot(matrix_a, matrix_b)
+----
+
+
+
+En matemáticas, la linealidad es una propiedad que garantiza que un sistema sea predecible y fácil de analizar. Se apoya en dos pilares fundamentales:
+
+* *Aditividad:* El efecto combinado de dos entradas juntas es igual a la suma de sus efectos individuales.
+* *Homogeneidad (Escalamiento):* Si multiplicamos la magnitud de una entrada por un factor escalar constante, la salida se multiplicará exactamente por ese mismo factor.
+
+En términos visuales, las transformaciones lineales mantienen las líneas rectas (no las curvan) y mantienen el origen fijo en su lugar. Esta simplicidad nos permite tomar problemas incomprensibles y descomponerlos en millones de operaciones básicas procesables en paralelo.
+
+== El Tejido del Espacio: Combinaciones y Bases
+
+Si la linealidad nos dice *cómo* cambian las cosas, necesitamos entender *con qué* estamos construyendo ese espacio. Aquí entran los conceptos que dan forma a cualquier sistema multidimensional:
+
+
+
+* *Combinación Lineal:* Es la operación constructiva por excelencia. Consiste en tomar un conjunto de vectores, "estirarlos" o "encogerlos" (multiplicarlos por un escalar) y sumarlos. Matemáticamente, un vector $\vec{w}$ es una combinación lineal de otros vectores si puede expresarse como:
++
+$$\vec{w} = c_1\vec{v}_1 + c_2\vec{v}_2 + \dots + c_n\vec{v}_n$$
++
+(donde las $c$ representan números escalares).
+
+* *Espacio Generado (Span):* Imagina dos vectores que apuntan en direcciones distintas. Si calculas absolutamente *todas* sus combinaciones lineales posibles, obtendrás un plano infinito. Ese conjunto de todos los destinos posibles a los que puedes llegar combinando tus vectores se llama espacio generado.
+
+* *Independencia Lineal:* ¿Aportan todos los vectores información nueva? Si tienes un conjunto de vectores y *ninguno* puede construirse como una combinación lineal de los demás, son linealmente independientes; no hay redundancia. Si uno de ellos sí puede formarse combinando el resto, es información repetida (linealmente dependiente) y no expande tu espacio generado.
+
+* *Base y Dimensión:* Si encuentras un conjunto de vectores que son linealmente independientes (cero redundancia) y que generan todo tu espacio de interés, has encontrado una *base*. El número estricto de vectores en esa base es lo que define la *dimensión* del espacio. Es el equivalente a definir los ejes norte-sur, este-oeste y arriba-abajo para poder describir cualquier punto del universo.
+
+[NOTE]
+====
+Pensar en términos de combinaciones y bases es crucial. Cuando entrenamos una red neuronal o comprimimos un archivo de audio, los algoritmos están, en el fondo, buscando la "base" más eficiente para representar esa información, descartando todo lo que sea "linealmente dependiente" o redundante.
+====
 
 == La Jerarquía de los Tensores
 
-Un tensor es un objeto matemático multilineal definido por su **rango**.
+Ahora que entendemos cómo se estructuran y combinan los elementos dentro de un espacio, podemos organizar las "colecciones de información" que lo habitan. Un tensor es, en su forma más pura, un objeto matemático multilineal definido por su rango. 
 
 [cols="1,1,2", options="header"]
 |===
 | Rango | Nombre | Significado Geométrico
-| 0 | **Escalar** ($k$) | Magnitud pura en un punto.
-| 1 | **Vector** ($\vec{v}$) | Dirección y magnitud en el espacio.
-| 2 | **Matriz** ($A$) | Transformación lineal entre espacios.
-| $n$ | **Tensor de orden $n$** | Generalización multidimensional.
+| 0 | Escalar ($k$) | Magnitud pura en un punto.
+| 1 | Vector ($\vec{v}$) | Dirección y magnitud en el espacio.
+| 2 | Matriz ($A$) | Transformación lineal entre espacios.
+| $n$ | Tensor de orden $n$ | Generalización multidimensional.
 |===
 
 [IMPORTANT]
 ====
-En computación, el rango de un tensor se suele llamar su **número de ejes** o **dimensiones** (`rank` o `ndim`).
+En computación y ciencia de datos, el rango de un tensor se suele llamar su número de ejes o dimensiones (conocido en librerías de código como `rank` o `ndim`).
 ====
 
 == Espacios, Kernel e Imagen
@@ -108,37 +275,39 @@ gradiente_f.(x) # [2.0, 4.0, 6.0]
 Nx utiliza **modos de compilación** para calcular estos gradientes de forma extremadamente eficiente, permitiendo que el compilador optimice la cadena de derivadas (regla de la cadena) antes de la ejecución.
 ====
 
-== Referencia: Funciones de Álgebra Lineal en Elixir
+== Compendio: Álgebra Lineal en el Ecosistema Elixir (Nx)
 
-A continuación se presenta una tabla exhaustiva de las funciones disponibles en el ecosistema **Nx** para realizar operaciones de álgebra lineal y cálculo de tensores.
+Como hemos visto, **Nx** funciona como un lenguaje para describir transformaciones en el espacio, superando la función de una librería de cálculo convencional. Aquí tienes un resumen organizado de las herramientas fundamentales que hemos introducido:
 
-[cols="2,2,3", options="header"]
+[cols="2,3,4", options="header"]
 |===
-| Categoría | Concepto | Función (Nx / Nx.LinAlg)
-.5+| **Operaciones Básicas** | Multiplicación Matricial / Dot | `Nx.dot/2`
-| Producto Exterior | `Nx.outer/2`
-| Transpuesta | `Nx.transpose/1` o `Nx.t/1`
+| Categoría | Operación | Función en Elixir (`Nx` / `Nx.LinAlg`)
+
+.5+| **Manipulación de Tensores** 
+| Creación de Matriz | `Nx.tensor([[...], [...]])`
+| Transpuesta (Espejo) | `Nx.transpose/1` o `Nx.t/1`
 | Difusión (Broadcasting) | `Nx.broadcast/2`
-| Suma / Resta / Escalar | `Nx.add/2`, `Nx.subtract/2`, `Nx.multiply/2`
+| Remodelar (Reshape) | `Nx.reshape/2`
+| Concatenación (Stack) | `Nx.stack/2` o `Nx.concatenate/2`
 
-.4+| **Propiedades y Métricas** | Norma (Vector/Matriz) | `Nx.LinAlg.norm/2`
+.5+| **Aritmética de Transformación** 
+| Suma / Resta | `Nx.add/2`, `Nx.subtract/2`
+| Escalamiento | `Nx.multiply/2` (Matriz y Escalar)
+| Multiplicación Matricial | `Nx.dot/2` (Composición de transformaciones)
+| Producto Exterior | `Nx.outer/2`
+| Inversa de Matriz | `Nx.LinAlg.invert/1`
+
+.4+| **Análisis y Geometría** 
+| Resolución de Sistemas ($Ax = b$) | `Nx.LinAlg.solve/2`
+| Norma (Magnitud) | `Nx.LinAlg.norm/2`
 | Determinante | `Nx.LinAlg.determinant/1`
-| Traza | `Nx.trace/1`
-| Rango de Matriz (Aprox) | `Nx.LinAlg.svd/1` (vía valores singulares)
+| Rango e Información (SVD) | `Nx.LinAlg.svd/1`
 
-.4+| **Soluciones y Sistemas** | Inversa de Matriz | `Nx.LinAlg.invert/1`
-| Pseudoinversa (Moore-Penrose) | `Nx.LinAlg.pinv/1`
-| Resolver Sistema $Ax = b$ | `Nx.LinAlg.solve/2`
+.4+| **Cálculo Avanzado** 
+| Gradientes ($\nabla$) | `Nx.grad/1`
+| Diferenciación Automática | `Nx.ValueWithGrad`
 | Potencia de Matriz | `Nx.LinAlg.matrix_power/2`
-
-.5+| **Descomposiciones** | Valores y Vectores Propios | `Nx.LinAlg.eigh/1` (matrices simétricas)
-| Val. Singulares (SVD) | `Nx.LinAlg.svd/1`
-| QR | `Nx.LinAlg.qr/1`
-| Cholesky | `Nx.LinAlg.cholesky/1`
-| LU | `Nx.LinAlg.lu/1`
-
-.2+| **Cálculo de Tensores** | Gradiente | `Nx.grad/1`
-| Jacobiano (Vía gradientes) | `Nx.grad/1` (aplicado sobre funciones vectoriales)
+| Descomposición QR / Cholesky | `Nx.LinAlg.qr/1`, `Nx.LinAlg.cholesky/1`
 |===
 
 [IMPORTANT]
