@@ -1,36 +1,36 @@
-= Lógica Proposicional
+= Las Simples Leyes del Razonamiento
 :icons: font
 :stem: mathjax
 
-Este apéndice establece los cimientos del razonamiento lógico, fundamentales tanto para la matemática pura como para la construcción de algoritmos y agentes de inteligencia artificial.
+Es un verdadero placer observar cómo el pensamiento humano, al igual que los fenómenos eléctricos, sigue leyes de una sencillez y belleza asombrosas. Estos principios lógicos no son solo abstracciones, sino los cimientos sobre los cuales construimos máquinas capaces de "razonar" junto a nosotros.
 
 == ¿Qué es una Proposición?
 
-Una **proposición** es una afirmación de la cual se puede decir, sin ambigüedad, que es verdadera ($V$) o falsa ($F$). En el mundo de la lógica, no nos importa tanto el significado de la frase, sino su **valor de verdad**.
+Llamamos **proposición** a cualquier afirmación que posea la maravillosa propiedad de ser, sin asomo de duda, verdadera ($V$) o falsa ($F$). En este estudio, no nos detendremos tanto en el significado literario de las palabras, sino en la fuerza de su **valor de verdad**.
 
 [cols="1,1,1", options="header"]
 |===
 | Expresión | ¿Es Proposición? | Valor de Verdad
 | "Elixir corre sobre la BEAM" | Sí | $V$
 | "$2 + 2 = 5$" | Sí | $F$
-| "¡Hola mundo!" | No | Exclamación
+| "¡Qué maravilloso es el mundo!" | No | Exclamación
 | "$x + 5 = 10$" | No | Enunciado abierto (depende de $x$)
 |===
 
 [NOTE]
 ====
-En programación, las proposiciones son el corazón de las estructuras de control (`if`, `case`, `cond`). Si una expresión no puede evaluarse como booleana, el programa arrojará un error.
+En el arte de la programación, estas proposiciones son las que dirigen el flujo de nuestras ideas a través de estructuras como `if` o `case`. Es una forma de darle "sentido" al movimiento de los datos.
 ====
 
-== Conectivos Lógicos
+== Conectivos Lógicos: El Entrelazado de las Ideas
 
-Para construir razonamientos complejos, combinamos proposiciones simples mediante **conectivos**.
+Para formar pensamientos más complejos, debemos unir nuestras proposiciones simples mediante **conectivos**, tal como unimos cables para que la corriente fluya.
 
 === Negación ($\neg$)
-Invierte el valor de verdad. Si $p$ es verdadero, $\neg p$ es falso.
+Es un acto sencillo pero potente: invierte el valor de lo que se afirma. Si $p$ es una verdad, $\neg p$ será, por necesidad natural, una falsedad.
 
 === Conjunción ($\land$)
-Es el "y" lógico. Solo es verdadera si **ambas** proposiciones lo son.
+Es nuestro "y" cotidiano. Solo brilla con la verdad cuando **ambas** partes que la componen son, por sí mismas, verdaderas.
 
 [source, elixir]
 ----
@@ -39,19 +39,19 @@ true and false # => false
 ----
 
 === Disyunción ($\lor$)
-Es el "o" lógico. Es verdadera si **al menos una** de las proposiciones lo es.
+Es el "o" de las posibilidades. Basta con que **al menos una** de las proposiciones sea verdadera para que todo el conjunto lo sea.
 
 === Implicación ($\to$)
-Si $p$, entonces $q$. Solo es falsa cuando el antecedente ($p$) es verdadero y el consecuente ($q$) es falso.
+"Si sucede esto, entonces aquello". Es la ley de la consecuencia. Fíjense bien: solo se considera falsa cuando la promesa se rompe, es decir, cuando partiendo de una verdad ($p$) llegamos a una falsedad ($q$).
 
 [IMPORTANT]
 ====
-La implicación es la base de las reglas de inferencia en sistemas expertos y agentes agénticos: `IF (condición) THEN (acción)`.
+Esta implicación es la base de todo sistema inteligente: `IF (condición) THEN (acción)`. Es la regla que permite a un agente actuar con propósito.
 ====
 
-== Tablas de Verdad
+== Tablas de Verdad: Observando todas las Posibilidades
 
-Las tablas de verdad nos permiten visualizar todas las combinaciones posibles de valores para un conjunto de proposiciones.
+Las tablas de verdad son como nuestros diarios de laboratorio; nos permiten anotar qué sucede en cada combinación posible de circunstancias.
 
 === Tabla de la Implicación ($p \to q$)
 
@@ -66,25 +66,24 @@ Las tablas de verdad nos permiten visualizar todas las combinaciones posibles de
 
 [TIP]
 ====
-Fíjate que si el antecedente es Falso ($F$), la implicación siempre es Verdadera ($V$). A esto se le llama **Verdad Vacua**. 
+Es curioso notar que si partimos de algo Falso ($F$), el razonamiento no se rompe y la ley se mantiene Verdadera ($V$). Algunos lo llaman **Verdad Vacua**, y es una de las sutilezas más bellas de la lógica.
 ====
 
-== Leyes de la Lógica (Tautologías)
+== Leyes de la Armonía Lógica (Tautologías)
 
-Existen equivalencias lógicas que son siempre verdaderas. Conocerlas permite optimizar el código y simplificar condiciones complejas.
+Existen ciertas formas de pensar que son, sin importar las circunstancias, siempre verdaderas. Conocerlas es como conocer las leyes de la inducción; nos permiten simplificar lo complejo.
 
 ### Leyes de De Morgan
-Son fundamentales para negar condiciones compuestas:
+Estas leyes nos enseñan cómo negar con elegancia pensamientos compuestos:
 
 1.  $\neg(p \land q) \equiv \neg p \lor \neg q$
 2.  $\neg(p \lor q) \equiv \neg p \land \neg q$
 
 [source, elixir]
 ----
-# Simplificando con De Morgan
+# Simplificando con las leyes de la naturaleza lógica
 # En vez de:
 not (user.is_admin and user.is_active)
-# Podemos usar:
+# Podemos expresar con la misma fuerza:
 not user.is_admin or not user.is_active
 ----
-

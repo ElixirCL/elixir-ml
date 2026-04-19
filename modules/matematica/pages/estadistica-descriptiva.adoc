@@ -1,33 +1,33 @@
-= Estadística Descriptiva
+= Observando el Orden de la Naturaleza: Estadística Descriptiva
 :icons: font
 :stem: mathjax
 
-La estadística descriptiva es el conjunto de técnicas matemáticas utilizadas para resumir, organizar y caracterizar un conjunto de datos. Su objetivo no es realizar inferencias, sino describir "qué nos están diciendo los datos" mediante medidas cuantitativas y visualizaciones.
+Para cualquier observador de la naturaleza, los datos en bruto son simplemente una multitud desordenada. La estadística descriptiva es la maravillosa herramienta que nos permite imponer claridad en ese aparente caos, extrayendo las armonías fundamentales de un conjunto de muestras sin aventurarnos todavía en el terreno de las suposiciones. Se trata, simplemente, de observar la realidad tal cual es.
 
 == Medidas de Tendencia Central
 
-Estas medidas buscan identificar el "centro" de la distribución de los datos.
+Antes de analizar sistemas complejos, debemos localizar el punto de equilibrio donde la distribución parece descansar.
 
-1. **Media Aritmética ($\bar{x}$)**: Es el promedio de los valores. Es sensible a valores atípicos (*outliers*).
+1. **Media Aritmética ($\bar{x}$)**: Representa el centro de gravedad de nuestros datos. Es el valor que esperaríamos encontrar bajo condiciones de perfecta uniformidad, aunque debemos tener cuidado, pues es sensible a valores extremos que pueden distorsionar la imagen de la realidad.
 [stem]
 --
 \bar{x} = \frac{1}{n} \sum_{i=1}^n x_i
 --
 
-2. **Mediana**: El valor que divide el conjunto de datos exactamente a la mitad cuando están ordenados. Es una medida robusta frente a valores atípicos.
+2. **Mediana**: Es el valor que divide nuestro conjunto de datos exactamente a la mitad. A diferencia de la media, posee una notable robustez; no se deja engañar fácilmente por el ruido o los valores anómalos.
 
-3. **Media Ponderada**: Útil cuando algunos datos tienen más importancia o "peso" que otros.
+3. **Media Ponderada**: Es necesaria cuando, por la naturaleza de nuestro experimento, decidimos otorgar distinta relevancia o "peso" a cada una de nuestras observaciones.
 [stem]
 --
 \bar{x}_w = \frac{\sum w_i x_i}{\sum w_i}
 --
 
-== Medidas de Dispersión
+== Medidas de Dispersión: La Amplitud de la Variación
 
-Indican qué tan alejados están los datos respecto al centro.
+Conocer el centro es solo el comienzo; ahora debemos cuantificar cuánto se alejan los datos de ese punto medio, tal como mediríamos la dispersión de la luz en un prisma.
 
 === Varianza ($\sigma^2$) y Desviación Estándar ($\sigma$)
-La varianza mide la media de los cuadrados de las desviaciones respecto a la media. La desviación estándar es su raíz cuadrada y mantiene las mismas unidades que los datos originales.
+La varianza nos da una medida del alejamiento al cuadrado. Sin embargo, para que nuestro análisis sea coherente con las unidades de medida que estamos observando, preferimos usar la desviación estándar. Es el indicador fundamental de la precisión y consistencia de nuestra muestra.
 
 [stem]
 --
@@ -35,7 +35,7 @@ La varianza mide la media de los cuadrados de las desviaciones respecto a la med
 --
 
 === Rango Intercuartílico (IQR)
-Mide la dispersión del 50% central de los datos. Se calcula como la diferencia entre el tercer cuartil ($Q_3$) y el primer cuartil ($Q_1$).
+Esta medida se concentra en la zona de mayor densidad, ignorando los extremos. Es nuestra base más firme para determinar qué puntos son simples anomalías que no pertenecen al patrón principal.
 [stem]
 --
 IQR = Q_3 - Q_1
@@ -43,52 +43,34 @@ IQR = Q_3 - Q_1
 
 [TIP]
 ====
-Se suelen considerar "outliers" a aquellos valores que están fuera del rango $[Q_1 - 1.5 \cdot IQR, Q_3 + 1.5 \cdot IQR]$.
+Es una regla de observación muy útil considerar como "anómalo" (*outlier*) a cualquier valor que se sitúe fuera de estos límites: $[Q_1 - 1.5 \cdot IQR, Q_3 + 1.5 \cdot IQR]$. No es un capricho, sino una forma lógica de discernir el orden.
 ====
 
-== Forma de la Distribución (Asimetría y Momentos)
+== La Forma de la Distribución
 
-Más allá del centro y la dispersión, la **asimetría** nos indica si los datos se distribuyen de forma uniforme alrededor de la media o si hay una concentración hacia un lado.
+Una vez que entendemos la ubicación y la dispersión, debemos contemplar la forma misma de nuestra "campana" de datos.
 
 === Coeficiente de Asimetría de Fisher ($G_1$)
-Es la medida más utilizada en software estadístico. Se basa en el tercer momento central estandarizado.
+Este coeficiente nos indica si la masa de nuestras observaciones se inclina hacia un lado u otro del espectro, rompiendo la simetría.
 [stem]
 --
 G_1 = \frac{\frac{1}{n} \sum_{i=1}^n (x_i - \bar{x})^3}{\sigma^3}
 --
-*   **$G_1 = 0$**: Distribución simétrica (como la Normal).
-*   **$G_1 > 0$**: Asimetría positiva (cola a la derecha).
-*   **$G_1 < 0$**: Asimetría negativa (cola a la izquierda).
+*   **$G_1 = 0$**: Una estructura perfectamente equilibrada y simétrica.
+*   **$G_1 > 0$**: Los datos muestran una "cola" que se estira hacia la derecha.
+*   **$G_1 < 0$**: La inclinación ocurre hacia la izquierda.
 
-=== Coeficiente de Asimetría de Pearson ($A_p$)
-Es una medida más sencilla basada en la relación entre la media, la mediana y la moda.
+== Relación entre Variables: El Diálogo de los Datos
 
-[cols="1,1", options="header"]
-|===
-| Tipo | Fórmula
-| Primer Coeficiente (Moda) | $A_p = \frac{\bar{x} - Moda}{\sigma}$
-| Segundo Coeficiente (Mediana) | $A_p = \frac{3(\bar{x} - Mediana)}{\sigma}$
-|===
+Cuando observamos dos variables ($X$ e $Y$) al mismo tiempo, buscamos comprender la afinidad o dependencia que existe entre ellas.
 
-[NOTE]
-====
-Estos coeficientes complementan a las medidas de dispersión: mientras que $\sigma$ nos dice cuánto se alejan los datos del centro, la asimetría nos dice **hacia qué lado** se alejan preferentemente.
-====
-
-=== Curtosis (Apuntamiento)
-Mide qué tan "puntiaguda" o "achatada" es la distribución respecto a una distribución normal.
-
-== Relación entre Variables
-
-Cuando analizamos dos variables ($X$ e $Y$) simultáneamente, buscamos entender su dependencia.
-
-1. **Covarianza**: Indica la dirección de la relación lineal.
+1. **Covarianza**: Nos indica la dirección de esta relación. Si ambas crecen al unísono, o si una desciende mientras la otra se eleva.
 [stem]
 --
 cov(X, Y) = \frac{1}{n} \sum (x_i - \bar{x})(y_i - \bar{y})
 --
 
-2. **Coeficiente de Correlación de Pearson ($r$)**: Escala la covarianza entre $-1$ y $1$.
+2. **Coeficiente de Correlación de Pearson ($r$)**: Es una escala preciosa que va del $-1$ al $1$, permitiéndonos ver qué tan fuerte es el vínculo lineal entre nuestras dos magnitudes estudiadas.
 [stem]
 --
 r = \frac{cov(X, Y)}{\sigma_X \sigma_Y}
@@ -96,72 +78,28 @@ r = \frac{cov(X, Y)}{\sigma_X \sigma_Y}
 
 [IMPORTANT]
 ====
-**Correlación no implica causalidad**. Una correlación de $1$ solo indica una relación lineal perfecta, no que una variable sea la causa de la otra.
+Siempre debemos recordar que una correlación fuerte no significa necesariamente que una cosa sea la causa de la otra. La naturaleza es compleja y a veces dos hilos se mueven juntos movidos por una misma mano invisible.
 ====
 
-== Implementación con Nx y Scholar
+== El Arte de la Computación con Nx y Scholar
 
-En Elixir, **Nx** proporciona cálculos básicos, mientras que **Scholar** ofrece herramientas estadísticas de alto nivel.
+En nuestras modernas máquinas, herramientas como **Nx** nos permiten realizar estos cálculos con una velocidad que parecería magia a nuestros antecesores.
 
 [source, elixir]
 ----
 import Nx
 alias Scholar.Stats
 
+# Observamos un conjunto de datos
 data = Nx.tensor([10, 12, 23, 23, 16, 23, 21, 16])
 
-# Tendencia Central con Nx
+# Calculamos el centro y la dispersión
 media = Nx.mean(data)
-# Scholar para medidas más específicas
 mediana = Stats.median(data)
-moda = Stats.mode(data)
-
-# Dispersión
 varianza = Nx.variance(data)
-desviacion = Nx.standard_deviation(data)
-
-# Relaciones entre dos tensores
-y = Nx.tensor([5, 8, 12, 13, 9, 14, 11, 8])
-correlacion = Stats.correlation_matrix(Nx.stack([data, y]))
 ----
 
 [TIP]
 ====
-Para conjuntos de datos masivos, `Nx` puede calcular estas estadísticas en paralelo usando la GPU, lo cual es miles de veces más rápido que un bucle tradicional en otros lenguajes.
-====
-
-== Referencia: Funciones de Estadística Descriptiva en Elixir
-
-A continuación se presenta una tabla exhaustiva de las funciones disponibles en el ecosistema **Nx** y **Scholar** para realizar estadística descriptiva.
-
-[cols="2,2,3", options="header"]
-|===
-| Categoría | Concepto | Función (Nx / Scholar)
-.6+| **Tendencia Central** | Media Aritmética | `Nx.mean/2`, `Scholar.Stats.mean/2`
-| Mediana | `Scholar.Stats.median/2`
-| Moda | `Scholar.Stats.mode/2`
-| Media Ponderada | `Scholar.Stats.weighted_mean/3`
-| Media Geométrica | `Scholar.Stats.geometric_mean/2`
-| Media Armónica | `Scholar.Stats.harmonic_mean/2`
-
-.6+| **Dispersión** | Varianza | `Nx.variance/2`, `Scholar.Stats.variance/2`
-| Desviación Estándar | `Nx.standard_deviation/2`, `Scholar.Stats.standard_deviation/2`
-| Mínimo / Máximo | `Nx.min/2`, `Nx.max/2`
-| Rango Intercuartílico (IQR) | `Scholar.Stats.iqr/2`
-| Cuantiles / Percentiles | `Scholar.Stats.quantile/2`
-| Rango Simple | `Nx.subtract(Nx.max(d), Nx.min(d))`
-
-.2+| **Forma** | Sesgo (Skewness) | `Scholar.Stats.skew/2`
-| Curtosis | `Scholar.Stats.kurtosis/2`
-
-.5+| **Relación y Operación** | Matriz de Covarianza | `Scholar.Stats.covariance_matrix/2`
-| Matriz de Correlación | `Scholar.Stats.correlation_matrix/2`
-| Puntaje Z (Z-Score) | `Scholar.Stats.z_score/2`
-| Media Móvil | `Scholar.Stats.moving_average/3`
-| Sumatoria / Producto | `Nx.sum/2`, `Nx.product/2`
-|===
-
-[NOTE]
-====
-La mayoría de las funciones de `Scholar.Stats` están optimizadas para trabajar con tensores de `Nx` de cualquier rango, permitiendo análisis multivariantes complejos con una sola línea de código.
+Al igual que las leyes de la física funcionan para todas las partículas, `Nx` puede aplicar estos cálculos a miles de datos de forma simultánea usando la potencia de la GPU. ¡Es un espectáculo digno de contemplar!
 ====
