@@ -1,0 +1,6 @@
+.Apéndice: Matemática
+* xref:logica-proposicional.adoc[Lógica Proposicional]
+* xref:algebra-lineal.adoc[Álgebra Lineal]
+* xref:estadistica-descriptiva.adoc[Estadística Descriptiva]
+* xref:modelos-probabilisticos.adoc[Modelos Probabilísticos]
+* xref:inferencia-estadistica.adoc[Inferencia Estadística]

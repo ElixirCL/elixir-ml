@@ -1,0 +1,112 @@
+= Inferencia Estadística
+:icons: font
+:math: mathjax
+
+La inferencia estadística es el proceso de usar datos de una muestra para sacar conclusiones sobre la población de la que proviene. Se divide principalmente en **estimación por intervalos** (dar un rango de valores probables) y **contraste de hipótesis** (tomar decisiones basadas en evidencia).
+
+== Inferencia sobre la Media ($\mu$): Población Normal
+
+Cuando trabajamos con una población que sigue una distribución $\mathcal{N}(\mu, \sigma)$, la estrategia depende de si conocemos la varianza poblacional ($\sigma^2$).
+
+=== Caso 1: Varianza ($\sigma$) Conocida
+En este escenario usamos la **Distribución Normal Estándar ($Z$)**. El intervalo de confianza se define como:
+[stem]
+++++
+I = \left[ \bar{x} \mp z_{\alpha/2} \frac{\sigma}{\sqrt{n}} \right]
+++++
+
+[source, elixir]
+----
+defmodule Inferencia.Media do
+  alias Statistics.Distributions.Normal
+
+  @doc "Contraste de hipótesis para H0: mu = mu0 (Dos colas)"
+  def test_z_bilateral(media_muestral, mu0, sigma, n, alfa) do
+    z_obs = (media_muestral - mu0) / (sigma / :math.sqrt(n))
+    z_critico = Normal.ppf(1 - alfa / 2, 0, 1)
+
+    if abs(z_obs) <= z_critico, do: :aceptada, else: :rechazada
+  end
+end
+----
+
+=== Caso 2: Varianza ($\sigma$) Desconocida
+Aquí debemos usar la cuasivarianza muestral ($S^2$) y la **Distribución t de Student** con $n-1$ grados de libertad.
+[stem]
+++++
+I = \left[ \bar{x} \mp t_{n-1:\alpha/2} \frac{S}{\sqrt{n}} \right]
+++++
+
+[source, elixir]
+----
+defmodule Inferencia.MediaT do
+  alias Statistics.Distributions.T
+
+  def test_t_bilateral(media_muestral, mu0, s, n, alfa) do
+    t_obs = (media_muestral - mu0) / (s / :math.sqrt(n))
+    t_critico = T.ppf(1 - alfa / 2, n - 1)
+
+    if abs(t_obs) <= t_critico, do: :aceptada, else: :rechazada
+  end
+end
+----
+
+== Muestras Grandes (Población no necesariamente Normal)
+
+Gracias al **Teorema Central del Límite**, si el tamaño de la muestra $n$ es suficientemente grande (habitualmente $n > 30$), podemos aproximar la distribución de la media a una Normal, incluso si la población original no lo es.
+
+*   **Población Binomial ($B(1, p)$)**:
+[stem]
+++++
+I = \left[ \hat{p} \mp z_{\alpha/2} \sqrt{\frac{\hat{p}(1-\hat{p})}{n}} \right]
+++++
+
+*   **Población Poisson ($\mathcal{P}(\lambda)$)**:
+[stem]
+++++
+I = \left[ \bar{x} \mp z_{\alpha/2} \sqrt{\frac{\bar{x}}{n}} \right]
+++++
+
+== Inferencia sobre la Varianza ($\sigma^2$)
+
+Para inferir sobre la dispersión de una población normal, recurrimos a la distribución **Ji-cuadrado ($\chi^2$)**.
+
+*   **Varianza con $\mu$ desconocida**:
+[stem]
+++++
+I = \left[ \frac{(n-1)S^2}{\chi^2_{n-1:\alpha/2}} , \frac{(n-1)S^2}{\chi^2_{n-1:1-\alpha/2}} \right]
+++++
+
+[source, elixir]
+----
+defmodule Inferencia.Varianza do
+  alias Statistics.Distributions.Chisq
+
+  def intervalo_confianza(s2, n, alfa) do
+    chi_inf = Chisq.ppf(1 - alfa / 2, n - 1)
+    chi_sup = Chisq.ppf(alfa / 2, n - 1)
+
+    num = (n - 1) * s2
+    {num / chi_inf, num / chi_sup}
+  end
+end
+----
+
+== Comparación de Varianzas (Dos Poblaciones)
+
+Para decidir si dos poblaciones tienen la misma varianza, comparamos el ratio de sus cuasivarianzas usando la **Distribución F de Snedecor**.
+
+[stem]
+++++
+\frac{S_1^2 / \sigma_1^2}{S_2^2 / \sigma_2^2} \to F_{n_1-1, n_2-1}
+++++
+
+[TIP]
+====
+En **Machine Learning**, estos contrastes son vitales para validar si dos modelos tienen un desempeño significativamente diferente o si la mejora observada es simplemente producto del azar.
+====
+
+[IMPORTANT]
+====
+Recuerda que el **p-valor** es la probabilidad de observar un resultado tan extremo como el obtenido si la hipótesis nula fuera cierta. Si `p-valor < alfa`, rechazamos $H_0$.
+====

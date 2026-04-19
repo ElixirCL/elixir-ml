@@ -1,0 +1,147 @@
+= Álgebra Lineal y Cálculo de Tensores
+:icons: font
+:math: mathjax
+
+El álgebra lineal no es solo el estudio de tablas de números; es el marco mediante el cual entendemos cómo transformar y deformar espacios. Cuando añadimos el cálculo a esta mezcla, obtenemos las herramientas necesarias para optimizar funciones complejas en dimensiones masivas.
+
+== La Jerarquía de los Tensores
+
+Un tensor es un objeto matemático multilineal definido por su **rango**.
+
+[cols="1,1,2", options="header"]
+|===
+| Rango | Nombre | Significado Geométrico
+| 0 | **Escalar** ($k$) | Magnitud pura en un punto.
+| 1 | **Vector** ($\vec{v}$) | Dirección y magnitud en el espacio.
+| 2 | **Matriz** ($A$) | Transformación lineal entre espacios.
+| $n$ | **Tensor de orden $n$** | Generalización multidimensional.
+|===
+
+[IMPORTANT]
+====
+En computación, el rango de un tensor se suele llamar su **número de ejes** o **dimensiones** (`rank` o `ndim`).
+====
+
+== Espacios, Kernel e Imagen
+
+Dada una matriz $A$, esta define dos subespacios fundamentales:
+
+- **Imagen o Espacio Columna** ($Im(A)$): El conjunto de todos los vectores que pueden ser alcanzados por la transformación $A\vec{x}$. Su dimensión es el **rango** de la matriz.
+- **Kernel o Espacio Nulo** ($Ker(A)$): El conjunto de vectores $\vec{x}$ que $A$ "aplasta" hacia el cero ($A\vec{x} = \vec{0}$).
+
+[TIP]
+====
+Si el Kernel contiene vectores distintos de cero, la transformación no es inyectiva; es decir, hay pérdida de información irreversible.
+====
+
+== Broadcasting (Difusión de Tensores)
+
+El **Broadcasting** es una regla matemática y computacional que permite realizar operaciones elemento a elemento entre tensores de distintas formas (`shapes`).
+
+Dos dimensiones son compatibles para el broadcasting si:
+1. Son iguales.
+2. Una de ellas es $1$.
+
+[source, text]
+----
+Tensor A (Shape: 3 x 4)
+Tensor B (Shape:     4)
+-----------------------
+A + B (Resultado: 3 x 4)
+----
+*Explicación*: La dimensión de $B$ se "difunde" virtualmente a lo largo de las filas de $A$ para que la operación sea posible.
+
+== Cálculo de Matrices: Gradientes y Jacobianos
+
+Cuando trabajamos con funciones que toman vectores como entrada o salida, las reglas ordinarias de derivación se expanden.
+
+=== El Gradiente ($\nabla$)
+Si tenemos una función escalar $f(\vec{x})$ que depende de un vector $\vec{x}$, el gradiente es el vector de todas sus derivadas parciales:
+
+[stem]
+++++
+\nabla f(\vec{x}) = \begin{pmatrix} \frac{\partial f}{\partial x_1} \\ \frac{\partial f}{\partial x_2} \\ \vdots \\ \frac{\partial f}{\partial x_n} \end{pmatrix}
+++++
+
+=== El Jacobiano ($\mathbf{J}$)
+Si tenemos una función vectorial $\vec{f}(\vec{x})$ (una función que toma un vector y devuelve otro), el Jacobiano es la matriz que contiene todas las derivadas parciales posibles:
+
+[stem]
+++++
+\mathbf{J} = \frac{\partial \vec{f}}{\partial \vec{x}} = \begin{pmatrix}
+\frac{\partial f_1}{\partial x_1} & \dots & \frac{\partial f_1}{\partial x_n} \\
+\vdots & \ddots & \vdots \\
+\frac{\partial f_m}{\partial x_1} & \dots & \frac{\partial f_m}{\partial x_n}
+\end{pmatrix}
+++++
+
+[IMPORTANT]
+====
+El Jacobiano es fundamental en el entrenamiento de redes neuronales, ya que mide cómo una pequeña perturbación en la entrada afecta a cada componente de la salida.
+====
+
+== De la Teoría a la Práctica: Nx
+
+En Nx, la diferenciación automática y el broadcasting son ciudadanos de primera clase.
+
+[source, elixir]
+----
+import Nx
+alias Nx.LinAlg
+
+# Ejemplo de Broadcasting
+a = Nx.tensor([[1, 2], [3, 4]])
+b = Nx.tensor([10, 20])
+Nx.add(a, b) # [[11, 22], [13, 24]]
+
+# Diferenciación Automática (Gradiente)
+f = fn x -> Nx.sum(Nx.pow(x, 2)) end
+gradiente_f = Nx.grad(f)
+
+# Evaluar el gradiente en un punto
+x = Nx.tensor([1.0, 2.0, 3.0])
+gradiente_f.(x) # [2.0, 4.0, 6.0]
+----
+
+[NOTE]
+====
+Nx utiliza **modos de compilación** para calcular estos gradientes de forma extremadamente eficiente, permitiendo que el compilador optimice la cadena de derivadas (regla de la cadena) antes de la ejecución.
+====
+
+== Referencia: Funciones de Álgebra Lineal en Elixir
+
+A continuación se presenta una tabla exhaustiva de las funciones disponibles en el ecosistema **Nx** para realizar operaciones de álgebra lineal y cálculo de tensores.
+
+[cols="2,2,3", options="header"]
+|===
+| Categoría | Concepto | Función (Nx / Nx.LinAlg)
+.5+| **Operaciones Básicas** | Multiplicación Matricial / Dot | `Nx.dot/2`
+| Producto Exterior | `Nx.outer/2`
+| Transpuesta | `Nx.transpose/1` o `Nx.t/1`
+| Difusión (Broadcasting) | `Nx.broadcast/2`
+| Suma / Resta / Escalar | `Nx.add/2`, `Nx.subtract/2`, `Nx.multiply/2`
+
+.4+| **Propiedades y Métricas** | Norma (Vector/Matriz) | `Nx.LinAlg.norm/2`
+| Determinante | `Nx.LinAlg.determinant/1`
+| Traza | `Nx.trace/1`
+| Rango de Matriz (Aprox) | `Nx.LinAlg.svd/1` (vía valores singulares)
+
+.4+| **Soluciones y Sistemas** | Inversa de Matriz | `Nx.LinAlg.invert/1`
+| Pseudoinversa (Moore-Penrose) | `Nx.LinAlg.pinv/1`
+| Resolver Sistema $Ax = b$ | `Nx.LinAlg.solve/2`
+| Potencia de Matriz | `Nx.LinAlg.matrix_power/2`
+
+.5+| **Descomposiciones** | Valores y Vectores Propios | `Nx.LinAlg.eigh/1` (matrices simétricas)
+| Val. Singulares (SVD) | `Nx.LinAlg.svd/1`
+| QR | `Nx.LinAlg.qr/1`
+| Cholesky | `Nx.LinAlg.cholesky/1`
+| LU | `Nx.LinAlg.lu/1`
+
+.2+| **Cálculo de Tensores** | Gradiente | `Nx.grad/1`
+| Jacobiano (Vía gradientes) | `Nx.grad/1` (aplicado sobre funciones vectoriales)
+|===
+
+[IMPORTANT]
+====
+Recuerda que para operaciones de alta complejidad como SVD o Inversión de matrices grandes, es altamente recomendable usar el controlador **EXLA** para aprovechar la aceleración por hardware.
+====

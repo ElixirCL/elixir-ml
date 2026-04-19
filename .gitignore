@@ -4,3 +4,6 @@
 node_modules/
 dbml-error.log
 
+# Proyectos personales (no forman parte del libro)
+apps/theorem_tracker/
+AI.pdf
