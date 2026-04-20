@@ -66,6 +66,15 @@
 <ul class="nav-list">
   <li class="nav-item" data-depth="0">
     <button class="nav-item-toggle"></button>
+    <span class="nav-text">Inicio</span>
+<ul class="nav-list">
+  <li class="nav-item is-current-page" data-depth="1">
+    <a class="nav-link" href="index.html">Bienvenida</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
     <span class="nav-text">Programación Agéntica</span>
 <ul class="nav-list">
   <li class="nav-item" data-depth="1">
@@ -79,6 +88,24 @@
   </li>
   <li class="nav-item" data-depth="1">
     <a class="nav-link" href="agentic/instalar-elixir-vscode.html">Configurar VSCode con Elixir y OpenCode</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Sensores y Percepción</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="agentic/ocr.html">OCR en Elixir</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Proyectos</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="agentic/proyecto-ocr.html">Script de OCR</a>
   </li>
 </ul>
   </li>
@@ -127,7 +154,8 @@
 <nav class="breadcrumbs" aria-label="breadcrumbs">
   <ul>
     <li><a href="index.html">Elixir ML & LLM</a></li>
-    <li><a href="index.html">Elixir ML &amp; LLM</a></li>
+    <li>Inicio</li>
+    <li><a href="index.html">Bienvenida</a></li>
   </ul>
 </nav>
 <div class="edit-this-page"><a href="file:///C:/Users/USER/Documents/Apuntes_Elixir_Libro/elixir-ml/./modules/ROOT/pages/index.adoc">Edit this Page</a></div>
@@ -138,7 +166,163 @@
 </aside>
 <article class="doc">
 <h1 class="page">Elixir ML &amp; LLM</h1>
-
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Bienvenido al libro abierto de <strong>Machine Learning</strong> y <strong>Modelos de Lenguaje de Gran Escala (LLMs)</strong> con el lenguaje de programación <strong>Elixir</strong>.</p>
+</div>
+<div class="paragraph">
+<p>Este proyecto nace de la comunidad <a href="https://elixircl.github.io">Elixir Chile</a> con un propósito claro: construir un puente entre la teoría matemática que sustenta la inteligencia artificial y su implementación práctica en un ecosistema diseñado para la concurrencia, la tolerancia a fallos y la escalabilidad.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Este libro es un recurso vivo y en constante evolución. Cada capítulo combina los fundamentos teóricos con ejemplos idiomáticos en Elixir usando librerías como <strong>Nx</strong>, <strong>Scholar</strong>, <strong>Axon</strong> y <strong>Bumblebee</strong>.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="para-quién-es-este-libro"><a class="anchor" href="#para-quién-es-este-libro"></a>¿Para quién es este libro?</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Desarrolladores que conocen Elixir y quieren explorar el campo del ML/IA.</p>
+</li>
+<li>
+<p>Estudiantes de ciencias de la computación, matemáticas o estadística que buscan una perspectiva funcional y concurrente.</p>
+</li>
+<li>
+<p>Profesionales que desean entender los fundamentos teóricos detrás de las herramientas de IA que usan a diario.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="estructura-del-libro"><a class="anchor" href="#estructura-del-libro"></a>Estructura del Libro</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>El libro se organiza en dos grandes ejes temáticos:</p>
+</div>
+<div class="sect2">
+<h3 id="programación-agéntica"><a class="anchor" href="#programación-agéntica"></a><span class="icon"><i class="fa fa-robot"></i></span> Programación Agéntica</h3>
+<div class="paragraph">
+<p>El primer módulo explora el paradigma de los <strong>agentes inteligentes</strong>: qué son, cómo se diseñan, y cómo las herramientas modernas de IA nos permiten construir software que percibe, decide y actúa de forma autónoma.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>¿Qué es un agente?</strong> — Definiciones, racionalidad y aprendizaje.</p>
+</li>
+<li>
+<p><strong>PEAS</strong> — El marco para describir la misión de un agente.</p>
+</li>
+<li>
+<p><strong>Configuración del entorno</strong> — VSCode, OpenCode y herramientas de IA.</p>
+</li>
+<li>
+<p><strong>Sensores y percepción</strong> — OCR como ejemplo de percepción visual.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="apéndice-matemático"><a class="anchor" href="#apéndice-matemático"></a><span class="icon"><i class="fa fa-square-root-alt"></i></span> Apéndice Matemático</h3>
+<div class="paragraph">
+<p>El segundo módulo proporciona las <strong>bases matemáticas</strong> necesarias para comprender los algoritmos de ML en profundidad:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Lógica Proposicional</strong> — Los cimientos del razonamiento formal.</p>
+</li>
+<li>
+<p><strong>Álgebra Lineal</strong> — Tensores, matrices y transformaciones con Nx.</p>
+</li>
+<li>
+<p><strong>Estadística Descriptiva</strong> — Medidas de tendencia, dispersión y correlación.</p>
+</li>
+<li>
+<p><strong>Modelos Probabilísticos</strong> — Distribuciones discretas y continuas.</p>
+</li>
+<li>
+<p><strong>Inferencia Estadística</strong> — Tests de hipótesis y p-valores.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="el-ecosistema-elixir-para-ml"><a class="anchor" href="#el-ecosistema-elixir-para-ml"></a>El Ecosistema Elixir para ML</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Elixir cuenta con un ecosistema maduro para el cómputo numérico y el aprendizaje automático:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 75%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Librería</th>
+<th class="tableblock halign-left valign-top">Propósito</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://hexdocs.pm/nx"><strong>Nx</strong></a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Computación numérica con tensores. El equivalente a NumPy en el mundo Elixir.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://hexdocs.pm/scholar"><strong>Scholar</strong></a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Algoritmos clásicos de ML: regresión, clustering, preprocesamiento.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://hexdocs.pm/axon"><strong>Axon</strong></a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Redes neuronales y deep learning con diferenciación automática.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://hexdocs.pm/bumblebee"><strong>Bumblebee</strong></a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Modelos pre-entrenados (GPT, BERT, Whisper, etc.) listos para usar.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://hexdocs.pm/exla"><strong>EXLA</strong></a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Backend de compilación que acelera Nx usando XLA (CPU/GPU/TPU).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://livebook.dev/"><strong>Livebook</strong></a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Notebooks interactivos para Elixir, similar a Jupyter.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Si es tu primera vez con Elixir, te recomendamos comenzar por el capítulo <a href="agentic/instalar-elixir-vscode.html" class="xref page">Configurar VSCode con Elixir y OpenCode</a> para dejar listo tu entorno de desarrollo.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
 <nav class="pagination">
   <span class="next"><a href="agentic/introduction.html">Introducción a la Programación Agéntica</a></span>
 </nav>

@@ -1,193 +1,350 @@
-= Modelos Probabilísticos
+= Modelos Probabilísticos: La Gramática de la Incertidumbre
 :icons: font
 :stem: mathjax
 
-En este capítulo exploraremos los modelos matemáticos que nos permiten cuantificar la incertidumbre. Estos modelos son la base de la inferencia estadística y del aprendizaje automático, permitiéndonos predecir comportamientos basándonos en leyes de probabilidad fundamentales. Comprender qué representa cada variable es vital para calibrar correctamente los algoritmos de IA.
+En el corazón de cada decisión tomada por un agente inteligente reside un cálculo de probabilidad. Para una IA, el mundo no es determinista, sino una red de posibilidades estocásticas. Este capítulo explora los modelos matemáticos que nos permiten cuantificar esa incertidumbre, transformando el caos de los datos en estructuras predecibles.
 
 == Distribuciones Discretas
 
-Asociadas a experimentos con resultados contables y finitos (conteo de eventos, éxitos, fallos).
+Utilizamos estos modelos cuando los resultados de nuestro experimento son contables y finitos, como el número de usuarios que hacen clic en un anuncio o la cantidad de intentos necesarios para que un agente refuerce una conducta.
 
-=== Distribución Binomial ($B(n, p)$)
-Modeliza el número de éxitos en una secuencia de ensayos independientes de Bernoulli.
+=== Distribución Uniforme Discreta: stem:[U(a, b)]
 
-*Variables del modelo:*
-* $n$: Número total de ensayos o intentos independientes.
-* $p$: Probabilidad de éxito en cada ensayo individual ($0 \le p \le 1$).
-* $x$: Número de éxitos observados que queremos evaluar ($x \in \{0, 1, \dots, n\}$).
+Es el modelo más elemental: todos los resultados posibles tienen la misma probabilidad. Como un dado justo, ningún resultado está favorecido sobre otro.
 
-$$p_X(x) = \binom{n}{x} p^x (1 - p)^{n-x}$$
+[cols="1,4", frame=none, grid=none]
+|===
+| stem:[a, b] | Límites inferior y superior del rango (stem:[a \le x \le b]).
+| stem:[n] | Número de valores posibles: stem:[n = b - a + 1].
+|===
 
-* **Media**: $E[X] = np$
-* **Varianza**: $V(X) = np(1-p)$
+[stem]
+++++
+p_X(x) = \frac{1}{b - a + 1}
+++++
 
-=== Distribución Geométrica ($Geom(p)$)
-Describe el número de fallos necesarios antes de observar el primer éxito. Es un modelo clave para el análisis de tiempos de espera en sistemas discretos.
+* **Media:** stem:[E[X] = \frac{a + b}{2}]
+* **Varianza:** stem:[V(X) = \frac{(b-a+1)^2 - 1}{12}]
 
-*Variables del modelo:*
-* $p$: Probabilidad de éxito en cada intento.
-* $x$: Número de fallos observados antes del primer éxito ($x \in \{0, 1, 2, \dots\}$).
+[source, elixir]
+----
+# Ejemplo: Simular un dado justo (Uniforme Discreta de 1 a 6)
+key = Nx.Random.key(42)
+{dado, _key} = Nx.Random.randint(key, 1, 7, shape: {1000})
+# Frecuencia de cada cara (debería ser ~167 cada una)
+----
 
-$$p_X(x) = (1 - p)^x p$$
+=== Distribución Binomial: stem:[B(n, p)]
 
-* **Media**: $E[X] = \frac{1-p}{p}$
-* **Varianza**: $V(X) = \frac{1-p}{p^2}$
+La Binomial es el modelo de referencia para experimentos de "éxito o fracaso". Imagina stem:[n] intentos independientes (ensayos de Bernoulli), donde cada uno tiene una probabilidad fija stem:[p] de éxito.
 
-=== Distribución Hipergeométrica ($Hiper(D, N, n)$)
-A diferencia de la Binomial, modela el muestreo **sin reemplazamiento** de una población finita.
+[cols="1,4", frame=none, grid=none]
+|===
+| stem:[n] | Número total de ensayos independientes.
+| stem:[p] | Probabilidad de éxito en cada ensayo (stem:[0 \le p \le 1]).
+| stem:[x] | Número de éxitos observados (stem:[x \in \{0, 1, \dots, n\}]).
+|===
 
-*Variables del modelo:*
-* $N$: Tamaño total de la población.
-* $D$: Número de elementos en la población que tienen la característica de interés (éxitos).
-* $n$: Tamaño de la muestra extraída.
-* $x$: Número de éxitos observados en la muestra.
+[stem]
+++++
+p_X(x) = \binom{n}{x} p^x (1 - p)^{n-x}
+++++
 
-$$p_X(x) = \frac{\binom{D}{x} \binom{N-D}{n-x}}{\binom{N}{n}}$$
+* **Media (Esperanza):** stem:[E[X] = np]
+* **Varianza:** stem:[V(X) = np(1-p)]
 
-* **Media**: $E[X] = \frac{Dn}{N}$
-* **Varianza**: $V(X) = \frac{D(N-D)n(N-n)}{N^2(N-1)}$
+[TIP]
+====
+**Uso en IA:** Es la base para evaluar modelos de clasificación binaria. Si un modelo tiene un 90% de precisión (stem:[p=0.9]), la Binomial nos dice qué tan probable es que acierte exactamente stem:[k] veces en stem:[n] nuevas predicciones.
+====
 
-=== Distribución Binomial Negativa ($BN(n, p)$)
-Analiza el número de fallos ($x$) antes de alcanzar el éxito $n$-ésimo.
+=== Distribución Geométrica: stem:[Geom(p)]
 
-*Variables del modelo:*
-* $n$: Número de éxitos objetivo que queremos alcanzar.
-* $p$: Probabilidad de éxito en un solo intento.
-* $x$: Número de fallos acumulados antes de llegar al $n$-ésimo éxito.
+Este modelo responde a la pregunta: ¿Cuántos fallos ocurrirán antes de ver nuestro primer éxito? Es el modelo de la "espera discreta".
 
-$$p_X(x) = \binom{n+x-1}{n-1} (1-p)^x p^n$$
+[cols="1,4", frame=none, grid=none]
+|===
+| stem:[p] | Probabilidad de éxito en cada intento.
+| stem:[x] | Número de fallos acumulados antes del primer éxito (stem:[x \in \{0, 1, 2, \dots\}]).
+|===
+
+[stem]
+++++
+p_X(x) = (1 - p)^x p
+++++
+
+* **Media:** stem:[E[X] = \frac{1-p}{p}]
+* **Varianza:** stem:[V(X) = \frac{1-p}{p^2}]
+
+[source, elixir]
+----
+# Ejemplo: ¿Cuántos correos debe enviar un bot antes de obtener una respuesta?
+# Si la probabilidad de respuesta es p=0.3
+p = 0.3
+media_espera = (1 - p) / p  # ~2.33 intentos fallidos en promedio
+----
+
+=== Distribución de Poisson: stem:[P(\lambda)]
+
+Ideal para modelar la ocurrencia de eventos raros en un intervalo continuo de tiempo o espacio.
+
+[cols="1,4", frame=none, grid=none]
+|===
+| stem:[\lambda] | Tasa media de ocurrencia (número esperado de eventos).
+| stem:[x] | Número de eventos que ocurren en el intervalo (stem:[x \in \{0, 1, 2, \dots\}]).
+|===
+
+[stem]
+++++
+p_X(x) = \frac{e^{-\lambda} \lambda^x}{x!}
+++++
+
+* **Media y Varianza:** stem:[E[X] = V(X) = \lambda]
+
+[TIP]
+====
+**Uso en IA:** Fundamental para modelar el tráfico de peticiones en un servidor de inferencia o la llegada de sensores en un sistema de IoT.
+====
+
+=== Distribución Hipergeométrica: stem:[Hiper(D, N, n)]
+
+A diferencia de la Binomial, la Hipergeométrica modela el muestreo **sin reemplazo**. Es vital cuando la extracción de un elemento altera significativamente las probabilidades de los siguientes.
+
+[cols="1,4", frame=none, grid=none]
+|===
+| stem:[N] | Tamaño total de la población.
+| stem:[D] | Número de elementos con la característica de interés (éxitos en la población).
+| stem:[n] | Tamaño de la muestra extraída.
+| stem:[x] | Número de éxitos observados en la muestra.
+|===
+
+[stem]
+++++
+p_X(x) = \frac{\binom{D}{x} \binom{N-D}{n-x}}{\binom{N}{n}}
+++++
+
+* **Media:** stem:[E[X] = \frac{Dn}{N}]
+* **Varianza:** stem:[V(X) = \frac{D(N-D)n(N-n)}{N^2(N-1)}]
+
+[source, elixir]
+----
+# Ejemplo: Probabilidad de obtener x=2 piezas defectuosas en una muestra de n=5, 
+# de un lote de N=20 con D=4 defectuosas totales.
+# Nota: La librería Statistics maneja esto analíticamente.
+alias Statistics.Distributions.Hypergeometric
+Hypergeometric.pmf(2, 4, 20, 5) # ~0.135
+----
+
+=== Distribución Binomial Negativa: stem:[BN(n, p)]
+
+Modela el número de fallos (stem:[x]) que ocurren antes de alcanzar un número objetivo de éxitos (stem:[n]). Es una extensión de la Geométrica.
+
+[cols="1,4", frame=none, grid=none]
+|===
+| stem:[n] | Número de éxitos objetivo.
+| stem:[p] | Probabilidad de éxito en cada intento.
+| stem:[x] | Número de fallos observados antes del éxito stem:[n]-ésimo.
+|===
+
+[stem]
+++++
+p_X(x) = \binom{n+x-1}{n-1} (1-p)^x p^n
+++++
+
+[source, elixir]
+----
+# Ejemplo: Un agente de RL necesita 3 recompensas (n=3) para aprender una tarea.
+# Si la probabilidad de recompensa por acción es p=0.4, 
+# ¿probabilidad de fallar exactamente 5 veces (x=5) antes del 3er éxito?
+
+n = 3; p = 0.4; x = 5
+# Cálculo manual con la fórmula:
+combinatorio = div(factorial(n + x - 1), factorial(n - 1) * factorial(x))
+prob = combinatorio * :math.pow(1 - p, x) * :math.pow(p, n)
+# prob ≈ 0.100
+----
 
 == Distribuciones Continuas
 
-Asociadas a variables que pueden tomar cualquier valor en un rango real (tiempo, peso, altura, espacios latentes).
+A diferencia de las discretas, las distribuciones continuas modelan variables que pueden tomar cualquier valor infinitamente preciso en un rango real (como el tiempo, el peso o los espacios latentes de un Autoencoder).
 
-=== Distribución Normal ($\mathcal{N}(\mu, \sigma^2)$)
-La piedra angular de la estadística moderna. La mayoría de las sumas de variables aleatorias convergen a esta distribución.
+=== Distribución Uniforme Continua: stem:[U(a, b)]
 
-*Variables del modelo:*
-* $\mu$ (mu): La media o el centro de la distribución. Indica dónde está el pico de la campana.
-* $\sigma$ (sigma): La desviación estándar. Controla la dispersión o anchura de la campana.
-* $x$: El valor real a evaluar ($-\infty < x < \infty$).
+Todos los valores en un intervalo stem:[[a, b]] son igualmente probables. Es el modelo de la "ignorancia completa" sobre un rango.
 
-$$f_X(x) = \frac{1}{\sigma \sqrt{2\pi}} \exp\left\{-\frac{1}{2\sigma^2}(x - \mu)^2\right\}$$
+[stem]
+++++
+f_X(x) = \frac{1}{b - a}, \quad a \le x \le b
+++++
 
-=== Distribución Beta ($Beta(a, b)$)
-Se define en el intervalo $(0, 1)$, ideal para modelar probabilidades y proporciones en inferencia Bayesiana.
+* **Media:** stem:[E[X] = \frac{a + b}{2}]
+* **Varianza:** stem:[V(X) = \frac{(b - a)^2}{12}]
 
-*Variables del modelo:*
-* $a$ ($\alpha$): Parámetro de forma 1. Tira de la masa de probabilidad hacia el 1.
-* $b$ ($\beta$): Parámetro de forma 2. Tira de la masa de probabilidad hacia el 0.
+[source, elixir]
+----
+# Ejemplo: Generar valores uniformes entre 0 y 1
+key = Nx.Random.key(42)
+{valores, _key} = Nx.Random.uniform(key, shape: {1000})
+----
 
-$$f_X(x) = \frac{\Gamma(a+b)}{\Gamma(a)\Gamma(b)} x^{a-1} (1-x)^{b-1}$$
+=== Distribución Normal: stem:[\mathcal{N}(\mu, \sigma^2)]
 
-Donde $\Gamma(p) = \int_{0}^{\infty} t^{p-1} e^{-t} dt$.
-* **Media**: $E[X] = \frac{a}{a+b}$
-* **Varianza**: $V(X) = \frac{ab}{(a+b)^2(a+b+1)}$
+La "Campana de Gauss" es el pilar central de la estadística. Según el Teorema Central del Límite, la suma de variables aleatorias independientes tiende a ser Normal, sin importar su origen.
+
+[cols="1,4", frame=none, grid=none]
+|===
+| stem:[\mu] | Media o centro de la distribución.
+| stem:[\sigma] | Desviación estándar (dispersión).
+| stem:[x] | Valor real a evaluar (stem:[-\infty < x < \infty]).
+|===
+
+[stem]
+++++
+f_X(x) = \frac{1}{\sigma \sqrt{2\pi}} \exp\left\{-\frac{1}{2\sigma^2}(x - \mu)^2\right\}
+++++
+
+[source, elixir]
+----
+# Ejemplo: Generación de 1000 muestras para inicializar los pesos de una neurona.
+key = Nx.Random.key(42)
+{weights, _new_key} = Nx.Random.normal(key, 0.0, 0.1, shape: {1000})
+----
+
+=== Distribución Beta: stem:[Beta(a, b)]
+
+Se define estrictamente en el intervalo stem:[(0, 1)]. Es la herramienta preferida en la inferencia Bayesiana para modelar **probabilidades desconocidas**.
+
+[cols="1,4", frame=none, grid=none]
+|===
+| stem:[a, b] | Parámetros de forma (shape) que inclinan la curva hacia 0 o 1.
+|===
+
+[stem]
+++++
+f_X(x) = \frac{\Gamma(a+b)}{\Gamma(a)\Gamma(b)} x^{a-1} (1-x)^{b-1}
+++++
+
+[source, elixir]
+----
+# Ejemplo: Un agente usa una distribución Beta para estimar la probabilidad 
+# de que un botón dé recompensa. Inicialmente (a=1, b=1) es una Normal Uniforme.
+alias Statistics.Distributions.Beta
+Beta.pdf(0.5, 1, 1) # Retorna 1.0 (Uniforme)
+----
 
 === Distribución Gamma y Exponencial
-Habitual en el modelado de tiempos de supervivencia y tiempos de espera continuos.
 
-*Variables del modelo:*
-* $a$ ($k$): Parámetro de forma. Determina el perfil de la curva.
-* $b$ ($\theta$): Parámetro de escala. Estira o comprime la distribución a lo largo del eje x.
+La Gamma modela el tiempo hasta que ocurren stem:[a] eventos independientes. El caso especial stem:[a=1] es la **Distribución Exponencial**, que modela el tiempo entre eventos.
 
-$$f_X(x) = \frac{1}{b^a \Gamma(a)} x^{a-1} e^{-x/b} \quad , \quad x > 0$$
+[cols="1,4", frame=none, grid=none]
+|===
+| stem:[a] | Parámetro de forma (k).
+| stem:[b] | Parámetro de escala (theta).
+|===
 
-* **Media**: $E[X] = ab$
-* **Varianza**: $V(X) = ab^2$
+[stem]
+++++
+f_X(x) = \frac{1}{b^a \Gamma(a)} x^{a-1} e^{-x/b}
+++++
 
-[NOTE]
-====
-El caso particular de **$a = 1$** se denomina **Distribución Exponencial**, con densidad $f(x) = \frac{1}{b} e^{-x/b}$. Su única variable suele denotarse como $\lambda = \frac{1}{b}$, que representa la tasa de ocurrencia.
-====
+[source, elixir]
+----
+# Ejemplo: Modelando el tiempo de decaimiento de una señal en una red neuronal temporal.
+alias Statistics.Distributions.Exponential
+Exponential.pdf(2.0, 1.5) # x=2.0, lambda=1.5
+----
 
 == Modelos Bidimensionales
 
+En el aprendizaje profundo, rara vez trabajamos con variables aisladas. La capacidad de modelar la interacción entre dos o más variables es lo que permite a las redes neuronales capturar patrones complejos.
+
 === Distribución Normal Bivariante
-Describe el comportamiento conjunto de dos variables aleatorias $(X, Y)$ que están relacionadas.
 
-*Variables del modelo:*
-* $\mu_1, \mu_2$: Las medias de las variables $X$ e $Y$.
-* $\sigma_1, \sigma_2$: Las desviaciones estándar de $X$ e $Y$.
-* $\rho$ (rho): El coeficiente de correlación entre ambas variables ($-1 \le \rho \le 1$).
+Describe el comportamiento conjunto de dos variables stem:[X] e stem:[Y]. Es la base de las Redes Bayesianas y de los modelos de regresión lineal.
 
-$$f(x, y) = \frac{1}{2\pi \sigma_1 \sigma_2 \sqrt{1 - \rho^2}} \exp \left\{ - \frac{1}{2(1 - \rho^2)} \left[ \frac{(x - \mu_1)^2}{\sigma_1^2} - \frac{2\rho(x - \mu_1)(y - \mu_2)}{\sigma_1 \sigma_2} + \frac{(y - \mu_2)^2}{\sigma_2^2} \right] \right\}$$
+[cols="1,4", frame=none, grid=none]
+|===
+| stem:[\mu_1, \mu_2] | Medias de stem:[X] e stem:[Y].
+| stem:[\sigma_1, \sigma_2] | Desviaciones estándar.
+| stem:[\rho] | Coeficiente de correlación (stem:[-1 \le \rho \le 1]).
+|===
 
-* **Covarianza**: $\mu_{11} = \rho \sigma_1 \sigma_2$
+[stem]
+++++
+f(x, y) = \frac{1}{2\pi \sigma_1 \sigma_2 \sqrt{1 - \rho^2}} \exp \left\{ - \frac{1}{2(1 - \rho^2)} \left[ \frac{(x - \mu_1)^2}{\sigma_1^2} - \frac{2\rho(x - \mu_1)(y - \mu_2)}{\sigma_1 \sigma_2} + \frac{(y - \mu_2)^2}{\sigma_2^2} \right] \right\}
+++++
 
-== Referencia Técnica en Elixir
+[TIP]
+====
+**Covarianza:** El grado de variación conjunta se define como stem:[\sigma_{xy} = \rho \sigma_1 \sigma_2].
+====
 
-El ecosistema en Elixir se divide en la generación masiva de tensores para IA (`Nx`) y el cálculo analítico preciso (`Statistics`).
+=== Generando Datos Bivariantes en Nx
 
-=== 1. Muestreo Aleatorio (Librería Nx.Random)
+[source, elixir]
+----
+# Generar muestras de una distribución normal bivariante
+# con correlación rho = 0.7
+key = Nx.Random.key(42)
 
-Estas funciones generan **tensores** con valores aleatorios. Son esenciales para simulaciones de Monte Carlo, inicialización de pesos y redes neuronales bayesianas.
+# Generamos dos normales independientes
+{z1, key} = Nx.Random.normal(key, 0.0, 1.0, shape: {1000})
+{z2, _key} = Nx.Random.normal(key, 0.0, 1.0, shape: {1000})
 
-*Variables comunes en Nx:*
-* `key`: El estado del generador pseudoaleatorio (PRNG). Asegura que los experimentos sean reproducibles.
-* `opts` (generalmente `shape`): Define las dimensiones del tensor resultante (ej. `shape: {1000}` para un vector de mil elementos).
+# Aplicamos la transformación de Cholesky para introducir correlación
+rho = 0.7
+x = z1
+y = Nx.add(Nx.multiply(rho, z1), Nx.multiply(:math.sqrt(1 - rho * rho), z2))
+
+# x e y ahora tienen correlación ~0.7
+----
+
+== Referencia Técnica: El Ecosistema Elixir
+
+Para implementar estos modelos, Elixir ofrece dos caminos complementarios dependiendo de si buscas **velocidad masiva (IA)** o **precisión analítica (Estadística)**.
+
+=== 1. Generación Masiva con `Nx.Random`
+
+Utiliza esta librería para inicializar pesos, añadir ruido a un agente o realizar simulaciones masivas en GPU/NIFs.
 
 [cols="2,3,4", options="header"]
 |===
-| Modelo | Función en Elixir | Explicación de Parámetros Clave
-| **Binomial** | `Nx.Random.binomial(key, n, p, opts)` | `n`: Total de intentos por experimento. `p`: Probabilidad de éxito (0.0 a 1.0).
-| **Normal** | `Nx.Random.normal(key, mu, sigma, opts)` | `mu`: Centro de la campana. `sigma`: Nivel de ruido/dispersión.
-| **Exponencial** | `Nx.Random.exponential(key, opts)` | No requiere parámetros extra; escala predeterminada a $1$.
-| **Beta** | `Nx.Random.beta(key, a, b, opts)` | `a, b`: Controlan el sesgo de la curva entre 0 y 1.
-| **Gamma** | `Nx.Random.gamma(key, a, opts)` | `a`: Controla la forma de la distribución asimétrica.
-| **t-Student** | `Nx.Random.t(key, df, opts)` | `df`: Grados de libertad (peso de las colas).
-| **Ji-cuadrado** | `Nx.Random.chisquare(key, df, opts)` | `df`: Grados de libertad.
+| Modelo | Función | Aplicación Típica
+| **Normal** | `normal(key, mu, sigma, opts)` | Inicialización de parámetros.
+| **Uniforme** | `uniform(key, opts)` | Exploración aleatoria, dropout.
+| **Binomial** | `binomial(key, n, p, opts)` | Modelado de eventos discretos.
+| **Beta** | `beta(key, a, b, opts)` | Muestreo en Reinforcement Learning.
+| **t-Student** | `t(key, df, opts)` | Robustez frente a outliers.
 |===
 
-=== 2. Cálculos Estadísticos (Librería Statistics.Distributions)
+=== 2. Análisis Preciso con `Statistics.Distributions`
 
-Cuando necesites el valor exacto de la curva (PDF) o la probabilidad acumulada (CDF), utilizas los módulos de `Statistics`. Estas funciones devuelven números escalares (`float`).
+Ideal para validación de hipótesis, cálculo de p-valores y análisis exploratorio. Una alternativa más moderna dentro del ecosistema ML es la librería https://hexdocs.pm/scholar[**Scholar**], que integra estos cálculos directamente con el pipeline de Nx.
 
-*Explicación de las variables de función:*
-* **`x`**: El valor empírico que estás evaluando (ej. "quiero saber la probabilidad de obtener exactamente un 5").
-* **`q`**: Una probabilidad o cuantil entre $0$ y $1$ (usado en `ppf`).
-
-*Las cuatro funciones nucleares por módulo:*
-* **`pmf(x, ...)` / `pdf(x, ...)`**: Probabilidad de Masa (discreta) o Densidad (continua) en el punto exacto $x$.
-* **`cdf(x, ...)`**: Probabilidad Acumulada. Es el área bajo la curva desde $-\infty$ hasta $x$.
-* **`ppf(q, ...)`**: Función de Punto Porcentual (Inversa). Dada una probabilidad acumulada $q$, devuelve el valor $x$ correspondiente.
-* **`rand(...)`**: Generación de una muestra única (no recomendado para IA masiva, usar Nx en su lugar).
+[cols="1,5", options="header"]
+|===
+| Función | Propósito
+| `pmf` / `pdf` | Probabilidad en un punto exacto (Masa/Densidad).
+| `cdf` | Probabilidad acumulada (Área a la izquierda).
+| `ppf` | Cuantil (Inversa de la CDF). Dado el %, devuelve el valor.
+|===
 
 [source, elixir]
 ----
 alias Statistics.Distributions.Normal
-alias Statistics.Distributions.Binomial
 
-# Probabilidad acumulada (CDF)
-# ¿Probabilidad de que una variable Normal(mu=0, sigma=1) sea menor a 1.96?
-# Resultado: ~0.975 (Intervalo de confianza del 95%)
-Normal.cdf(1.96, 0, 1)
+# ¿Qué valor 'z' deja el 2.5% de probabilidad en la cola derecha?
+# (Equivalente al 97.5% a la izquierda)
+z_valor = Normal.ppf(0.975, 0, 1) # ~1.96
 
-# Probabilidad de masa (PMF)
-# ¿Probabilidad de tener exactamente x=5 éxitos en n=10 intentos con p=0.5?
-Binomial.pmf(5, 10, 0.5)
-
-# Función inversa (PPF)
-# ¿Qué valor 'x' concentra el 95% de la probabilidad a su izquierda en una Normal estándar?
-Normal.ppf(0.95, 0, 1) # Resultado: ~1.644
+# ¿Cuál es la densidad en el centro de una Normal estándar?
+densidad = Normal.pdf(0, 0, 1) # ~0.3989
 ----
-
-=== 3. Tabla de Referencia de Módulos (Cálculo Analítico)
-
-[cols="2,3", options="header"]
-|===
-| Modelo | Módulo en Statistics (Ejemplo de uso de pdf/pmf)
-| **Poisson** | `Statistics.Distributions.Poisson.pmf(x, lambda)`
-| **Exponencial** | `Statistics.Distributions.Exponential.pdf(x, lambda)`
-| **Beta** | `Statistics.Distributions.Beta.pdf(x, alpha, beta)`
-| **Gamma** | `Statistics.Distributions.Gamma.pdf(x, k, theta)`
-| **F-Snedecor** | `Statistics.Distributions.F.pdf(x, d1, d2)`
-|===
 
 [TIP]
 ====
-**¿Cómo elegir cuál usar?**
+**Regla de Oro para el Desarrollador:**
 
-* Usa **Nx.Random** si estás entrenando una Red Neuronal, creando un Agente de IA que toma decisiones estocásticas, añadiendo ruido a un espacio latente, o haciendo simulaciones masivas en GPU.
-* Usa **Statistics.Distributions** si estás haciendo análisis de datos exploratorio, validando hipótesis estadísticas teóricas (cálculo de p-values) o programando la función de pérdida matemática de un modelo.
+* Si necesitas un **millón de valores** para una Red Neuronal: usa **Nx**.
+* Si necesitas calcular el **p-valor** de un experimento científico: usa **Statistics**.
 ====

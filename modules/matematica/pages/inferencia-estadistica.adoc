@@ -18,14 +18,31 @@ Todo contraste de hipótesis es una partición del espacio de resultados. Basán
 
 Formalmente, nuestra regla de decisión se resume en:
 [stem]
---
+++++
 \begin{cases} 
 \text{Aceptar } H_0 & \text{si } T \in C^* \\ 
 \text{Rechazar } H_0 & \text{si } T \in C 
 \end{cases}
---
+++++
 
 La probabilidad de caer en la región crítica stem:[C] cuando stem:[H_0] es realmente cierta se define como el nivel de significancia (stem:[\alpha]).
+
+=== Flujo de un Contraste de Hipótesis
+
+[.text-center]
+[mermaid]
+....
+graph TD
+    A["Formular H₀ y H₁"] --> B["Elegir nivel α"]
+    B --> C["Seleccionar estadístico T"]
+    C --> D["Calcular T con la muestra"]
+    D --> E{"¿T ∈ Región Crítica?"}
+    E -- Sí --> F["Rechazar H₀"]
+    E -- No --> G["No rechazar H₀"]
+    F --> H["Calcular p-valor"]
+    G --> H
+    H --> I["Reportar conclusión"]
+....
 
 === Tipos de Hipótesis: Simples y Compuestas
 
@@ -41,6 +58,35 @@ Existe una relación profunda y elegante entre estas dos vertientes de la infere
 Aceptaremos stem:[H_0] con un nivel de significancia stem:[\alpha] si, y solo si, el valor de la nula stem:[\theta_0] pertenece al intervalo de confianza de nivel stem:[1 - \alpha] calculado a partir de la muestra.
 ====
 
+== ¿Cuándo usar cada Test?
+
+Antes de sumergirnos en los detalles, esta tabla resume la elección del test según el escenario:
+
+[cols="2,2,2,2", options="header"]
+|===
+| Situación | Parámetro | stem:[\sigma] conocida | stem:[\sigma] desconocida
+
+| Una media
+| stem:[\mu]
+| Test **Z** (Normal)
+| Test **t** (Student)
+
+| Proporción
+| stem:[p]
+| Test **Z** (stem:[n] grande)
+| —
+
+| Varianza
+| stem:[\sigma^2]
+| —
+| Test **stem:[\chi^2]** (Ji-cuadrado)
+
+| Dos medias independientes
+| stem:[\mu_1 - \mu_2]
+| Test **Z**
+| Test **t** (Welch)
+|===
+
 == Inferencia sobre la Media (stem:[\mu]): Población Normal
 
 Cuando trabajamos con una población que sigue una distribución stem:[\mathcal{N}(\mu, \sigma)], la estrategia depende de si conocemos la varianza poblacional (stem:[\sigma^2]).
@@ -49,9 +95,9 @@ Cuando trabajamos con una población que sigue una distribución stem:[\mathcal{
 En este escenario usamos la **Distribución Normal Estándar (stem:[Z])**. El intervalo de confianza se define como:
 
 [stem]
---
-I = \left[ \bar{x} - z_{\alpha/2} \frac{\sigma}{\sqrt{n}} \ , \ \bar{x} + z_{\alpha/2} \frac{\sigma}{\sqrt{n}} \right]
---
+++++
+I = \left[ \bar{x} - z_{\alpha/2} \frac{\sigma}{\sqrt{n}}, \bar{x} + z_{\alpha/2} \frac{\sigma}{\sqrt{n}} \right]
+++++
 
 En **Elixir**, podemos implementar este contraste utilizando tensores de **Nx** para manejar los datos de entrada:
 
@@ -84,9 +130,9 @@ end
 Aquí debemos usar la cuasivarianza muestral (stem:[S^2]) y la **Distribución t de Student** con stem:[n-1] grados de libertad. El intervalo de confianza se ensancha para compensar la incertidumbre:
 
 [stem]
---
-I = \left[ \bar{x} - t_{n-1:\alpha/2} \frac{S}{\sqrt{n}} \ , \ \bar{x} + t_{n-1:\alpha/2} \frac{S}{\sqrt{n}} \right]
---
+++++
+I = \left[ \bar{x} - t_{n-1:\alpha/2} \frac{S}{\sqrt{n}}, \bar{x} + t_{n-1:\alpha/2} \frac{S}{\sqrt{n}} \right]
+++++
 
 [source, elixir]
 ----
@@ -154,9 +200,65 @@ No siempre buscamos cualquier diferencia (bilateral). A veces nuestra sospecha t
 *   **Unilateral (Una cola):** stem:[H_1: \mu > \mu_0] o stem:[H_1: \mu < \mu_0]. Toda la masa de error stem:[\alpha] se concentra en un solo extremo, haciendo el test más "sensible" en esa dirección.
 
 [stem]
---
-\text{Rechazar } H_0 \text{ si } \frac{\bar{x} - \mu_0}{S/\sqrt{n}} > t_{n-1:\alpha}
---
+++++
+\text{Rechazar } H_0 \text{ si } \frac{|\bar{x} - \mu_0|}{S/\sqrt{n}} > t_{n-1:\alpha}
+++++
+
+== Comparación de Dos Medias Independientes
+
+Uno de los escenarios más frecuentes en ML es comparar el rendimiento de **dos modelos** o dos tratamientos. ¿El modelo A tiene mayor accuracy que el modelo B, o la diferencia se debe al azar?
+
+=== El Problema
+
+Tenemos dos muestras independientes de tamaños stem:[n_1] y stem:[n_2], y queremos contrastar:
+
+* stem:[H_0: \mu_1 = \mu_2] (No hay diferencia entre los modelos)
+* stem:[H_1: \mu_1 \neq \mu_2] (Existe una diferencia significativa)
+
+=== Test t de Welch
+
+Cuando las varianzas de ambas poblaciones son desconocidas y potencialmente distintas, usamos el **test t de Welch**:
+
+[stem]
+++++
+t = \frac{\bar{x}_1 - \bar{x}_2}{\sqrt{\frac{S_1^2}{n_1} + \frac{S_2^2}{n_2}}}
+++++
+
+[source, elixir]
+----
+defmodule ElixirML.Inferencia.DosMedias do
+  @doc """
+  Test t de Welch para comparar dos medias independientes.
+  No asume varianzas iguales.
+  """
+  def welch_test(muestra_1, muestra_2) do
+    n1 = Nx.size(muestra_1)
+    n2 = Nx.size(muestra_2)
+    
+    media_1 = Nx.mean(muestra_1) |> Nx.to_number()
+    media_2 = Nx.mean(muestra_2) |> Nx.to_number()
+    
+    var_1 = Nx.variance(muestra_1) |> Nx.to_number()
+    var_2 = Nx.variance(muestra_2) |> Nx.to_number()
+    
+    # Estadístico t de Welch
+    t_obs = (media_1 - media_2) / :math.sqrt(var_1/n1 + var_2/n2)
+    
+    # Grados de libertad de Welch-Satterthwaite
+    num = :math.pow(var_1/n1 + var_2/n2, 2)
+    den = :math.pow(var_1/n1, 2)/(n1-1) + :math.pow(var_2/n2, 2)/(n2-1)
+    df = num / den
+    
+    %{t_observado: t_obs, grados_libertad: Float.round(df, 1)}
+  end
+end
+
+# Ejemplo: ¿El modelo A (accuracy) es significativamente mejor que el modelo B?
+modelo_a = Nx.tensor([0.92, 0.89, 0.91, 0.93, 0.90, 0.88, 0.91], type: :f32)
+modelo_b = Nx.tensor([0.85, 0.87, 0.84, 0.86, 0.83, 0.88, 0.85], type: :f32)
+
+ElixirML.Inferencia.DosMedias.welch_test(modelo_a, modelo_b)
+----
 
 == Muestras Grandes y el Teorema Central del Límite
 
@@ -164,15 +266,15 @@ Gracias al **Teorema Central del Límite (TCL)**, si el tamaño de la muestra st
 
 *   **Población Binomial (stem:[B(1, p)]):**
 [stem]
---
-I = \left[ \hat{p} - z_{\alpha/2} \sqrt{\frac{\hat{p}(1-\hat{p})}{n}} \ , \ \hat{p} + z_{\alpha/2} \sqrt{\frac{\hat{p}(1-\hat{p})}{n}} \right]
---
+++++
+I = \left[ \hat{p} - z_{\alpha/2} \sqrt{\frac{\hat{p}(1-\hat{p})}{n}} , \hat{p} + z_{\alpha/2} \sqrt{\frac{\hat{p}(1-\hat{p})}{n}} \right]
+++++
 
 *   **Población Poisson (stem:[\mathcal{P}(\lambda)]):**
 [stem]
---
-I = \left[ \bar{x} - z_{\alpha/2} \sqrt{\frac{\bar{x}}{n}} \ , \ \bar{x} + z_{\alpha/2} \sqrt{\frac{\bar{x}}{n}} \right]
---
+++++
+I = \left[ \bar{x} - z_{\alpha/2} \sqrt{\frac{\bar{x}}{n}} , \bar{x} + z_{\alpha/2} \sqrt{\frac{\bar{x}}{n}} \right]
+++++
 
 == Inferencia sobre la Varianza (stem:[\sigma^2])
 
@@ -180,9 +282,9 @@ Para inferir sobre la dispersión de una población normal, recurrimos a la dist
 
 *   **Varianza con stem:[\mu] desconocida:**
 [stem]
---
-I = \left[ \frac{(n-1)S^2}{\chi^2_{n-1:\alpha/2}} \ , \ \frac{(n-1)S^2}{\chi^2_{n-1:1-\alpha/2}} \right]
---
+++++
+I = \left[ \frac{(n-1)S^2}{\chi^2_{n-1:\alpha/2}} , \frac{(n-1)S^2}{\chi^2_{n-1:1-\alpha/2}} \right]
+++++
 
 [source, elixir]
 ----
@@ -204,6 +306,19 @@ end
 == El Cuadro de Decisiones: Errores en el Test
 
 Al tomar una decisión basada en probabilidad, siempre existe un riesgo. En la ciencia de datos, debemos equilibrar estos dos tipos de fallos:
+
+[cols="1,2,2", options="header"]
+|===
+| | stem:[H_0] es Verdadera | stem:[H_0] es Falsa
+
+| **Rechazar stem:[H_0]**
+| ❌ Error Tipo I (stem:[\alpha])
+| ✅ Decisión Correcta (Potencia)
+
+| **No rechazar stem:[H_0]**
+| ✅ Decisión Correcta
+| ❌ Error Tipo II (stem:[\beta])
+|===
 
 * **Error Tipo I (stem:[\alpha]):** Rechazar la hipótesis nula stem:[H_0] cuando en realidad es cierta (un "falso positivo").
 * **Error Tipo II (stem:[\beta]):** No rechazar stem:[H_0] cuando la hipótesis alternativa stem:[H_1] es la verdadera (un "falso negativo").
@@ -227,7 +342,48 @@ El p-valor es el nivel de significancia más pequeño para el cual la hipótesis
 * **Si el p-valor es muy pequeño:** Nos dice que los datos observados son extremadamente raros bajo el supuesto de stem:[H_0]. La evidencia es abrumadora en su contra.
 * **Si el p-valor es grande:** Los datos son perfectamente compatibles con stem:[H_0].
 
+=== Cálculo del p-valor en Elixir
+
+[source, elixir]
+----
+defmodule ElixirML.Inferencia.PValor do
+  @doc """
+  Calcula un p-valor aproximado para un test Z bilateral.
+  Usa la aproximación de la función error complementaria.
+  """
+  def p_valor_z(z_obs) do
+    # Aproximación: P(Z > |z|) ≈ erfc(|z|/√2) / 2
+    # Para un test bilateral: p = 2 * P(Z > |z|)
+    z_abs = abs(z_obs)
+    
+    # Aproximación usando la serie de Taylor de erfc
+    cola_derecha = 0.5 * :math.erfc(z_abs / :math.sqrt(2))
+    p = 2 * cola_derecha
+    
+    %{
+      z_observado: z_obs,
+      p_valor: Float.round(p, 6),
+      significativo_005: p < 0.05,
+      significativo_001: p < 0.01
+    }
+  end
+end
+
+# Ejemplo: ¿Es significativo un z_obs = 2.5?
+ElixirML.Inferencia.PValor.p_valor_z(2.5)
+# => %{z_observado: 2.5, p_valor: 0.012419, significativo_005: true, significativo_001: false}
+----
+
 [IMPORTANT]
 ====
 En la ciencia de datos moderna, no basta con decir "rechazamos" o "aceptamos". Reportar el p-valor permite que otros investigadores decidan si la evidencia es suficiente para sus propios estándares de rigor.
 ====
+
+== Conexión con Machine Learning
+
+La inferencia estadística no es un ejercicio académico aislado; es una herramienta operativa en el ciclo de desarrollo de ML:
+
+* **Validación de modelos:** Un test t de dos muestras permite determinar si la diferencia en accuracy entre dos arquitecturas es estadísticamente significativa o solo ruido.
+* **A/B Testing:** El contraste de hipótesis es la columna vertebral de los experimentos en producción.
+* **Feature selection:** Los p-valores ayudan a distinguir qué variables tienen una relación real con la variable objetivo y cuáles son espurias.
+* **Intervalos de predicción:** No solo queremos una predicción puntual, sino un rango de confianza que cuantifique nuestra incertidumbre.

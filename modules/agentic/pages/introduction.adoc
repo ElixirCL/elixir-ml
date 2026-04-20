@@ -1,4 +1,5 @@
 = Introducción a la Programación Agéntica
+:icons: font
 
 La *programación agéntica* (o _agentic programming_) es un enfoque de desarrollo donde se crean *agentes de software autónomos*, normalmente impulsados por IA, capaces de *tomar decisiones, aprender y ejecutar tareas por sí mismos* en lugar de seguir únicamente instrucciones fijas.
 
@@ -11,9 +12,9 @@ En vez de definir paso a paso "haz A → luego B → luego C", se diseña un age
 
 A partir de esto, el agente decide cómo actuar.
 
-En un programa tradicional, se sigue reglas exactas.
-Mientras que en un programa agéntico, se persigue objetivos y 
-decide cómo alcanzarlos.
+En un programa tradicional, se siguen reglas exactas.
+Mientras que en un programa agéntico, se persiguen objetivos y 
+se decide cómo alcanzarlos.
 
 Un agente puede, por ejemplo:
 
@@ -23,9 +24,18 @@ Un agente puede, por ejemplo:
 - Coordinar tareas entre varias aplicaciones
 - Aprender de interacciones pasadas
 
+== ¿Por qué Elixir?
+
+Elixir no es solo un lenguaje funcional elegante; su arquitectura lo convierte en un candidato natural para la programación agéntica:
+
+* **Concurrencia masiva:** Los procesos ligeros de la BEAM permiten ejecutar miles de agentes simultáneos sin colapsar los recursos del sistema. Cada agente puede vivir en su propio proceso, con su propia memoria y ciclo de vida.
+* **Tolerancia a fallos:** La filosofía _"let it crash"_ y los árboles de supervisión garantizan que si un agente falla, el sistema se recupera automáticamente. Un agente que se equivoca no arrastra a los demás.
+* **Pattern matching:** La coincidencia de patrones es ideal para modelar la función de un agente: dado un percepto, seleccionar la acción correcta.
+* **Distribución:** La BEAM puede ejecutar procesos en múltiples nodos, permitiendo sistemas multi-agente distribuidos de forma nativa.
+
 **Componentes típicos**
 
-- *Modelo de lenguaje (LLM)*: el “cerebro”
+- *Modelo de lenguaje (LLM)*: el "cerebro"
 - *Memoria*: corto y largo plazo
 - *Planificación*: divide tareas complejas
 - *Herramientas*: acciones en el mundo real (APIs, software)
@@ -75,25 +85,34 @@ muy actualizados y pueden variar. Una opción razonable es analizar los precios
 de https://cursor.com/es/docs/models-and-pricing[Cursor], ya que la mayoría de las otras herramientas tendrán un valor similar y conforme avanza la tecnología modelos
 más nuevos abaratan los costos de los modelos anteriores.
 
-=== Modelos Populares
+=== Herramientas Agénticas
+
+Las herramientas agénticas son los entornos de desarrollo que integran modelos de lenguaje para asistir en la programación de forma interactiva.
 
 Se puede ver los últimos modelos en la siguiente web https://hasbeenreleased.com/[Has been Released].
 
-- Claude Code
-- Cursor
-- Codex
-- Sonnet
-- Haiku
+* https://claude.ai/code[**Claude Code**] — Agente de terminal de Anthropic, especializado en tareas de código complejas.
+* https://cursor.com/[**Cursor**] — Editor de código con IA integrada, basado en VS Code.
+* https://openai.com/codex[**Codex**] — Motor de generación de código de OpenAI, base de GitHub Copilot.
 
-=== ¿Se puede instalar modelos locales?
+=== Modelos de Lenguaje Populares
 
-Si bien es posible comprar un computador potente como un https://www.elladodelmal.com/2024/12/como-montar-tu-propio-servidor-de.html[Mac Mini] (Una configuración mínima para poder ejecutar modelos decentes sería un Macbook Pro M4 con 32GB de RAM y 1TB de disco duro).
-e instalar un modelo local como https://ollama.com/[oLlama], https://lmstudio.ai/[LMStudio] o https://pinokio.co/[Pinokio]. Para simular las capacidades de cómputo de un modelo de subscripción como https://www.anthropic.com/claude/opus[Opus 4.6] se necesitaría una inversión
+Los modelos de lenguaje son las "inteligencias" que alimentan las herramientas agénticas. Cada uno tiene fortalezas distintas:
+
+* **Sonnet** (Anthropic) — Equilibrio entre velocidad y calidad, ideal para tareas cotidianas.
+* **Haiku** (Anthropic) — Modelo ligero y rápido para tareas simples.
+* **GPT-4o** (OpenAI) — Modelo multimodal con capacidad de procesamiento de imágenes y audio.
+* **Gemini** (Google) — Modelo con ventana de contexto extensa, ideal para análisis de proyectos grandes.
+
+=== ¿Se pueden instalar modelos locales?
+
+Si bien es posible comprar un computador potente como un https://www.elladodelmal.com/2024/12/como-montar-tu-propio-servidor-de.html[Mac Mini] (una configuración mínima para poder ejecutar modelos decentes sería un Macbook Pro M4 con 32GB de RAM y 1TB de disco duro)
+e instalar un modelo local como https://ollama.com/[oLlama], https://lmstudio.ai/[LMStudio] o https://pinokio.co/[Pinokio], para simular las capacidades de cómputo de un modelo de suscripción como https://www.anthropic.com/claude/opus[Opus 4.6] se necesitaría una inversión
 grande en equipos que no todos tienen la capacidad económica de costear.
 
-Por lo que utilizar modelos locales, si bien es factible. Para entornos
+Por lo que utilizar modelos locales, si bien es factible, para entornos
 de producción y uso profesional es más recomendable las herramientas
-de subscripción disponibles o por lo menos un híbrido entre opciones locales y la nube.
+de suscripción disponibles o por lo menos un híbrido entre opciones locales y la nube.
 
 ++++
 <iframe width="100%" height="515" src="https://www.youtube.com/embed/GBR6pHZ68Ho?si=ZwYlUv5FLrsumKzY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
@@ -109,7 +128,7 @@ https://pinokio.co/[Pinokio] Es un "hub" de aplicaciones que permite instalar, e
 
 === Hermes Agent, OpenClaw, OpenCode
 
-https://github.com/NousResearch/hermes-agent[Hermes Agent], https://opencode.ai/[OpenCode] y https://github.com/openclaw/openclaw[OpenClaw] son dos herramientas que permiten dar un contexto persistente a los modelos
+https://github.com/NousResearch/hermes-agent[Hermes Agent], https://opencode.ai/[OpenCode] y https://github.com/openclaw/openclaw[OpenClaw] son tres herramientas que permiten dar un contexto persistente a los modelos
 de LLM. Herramientas como _Claude Code_, _Codex_ y _Cursor_ son potentes dentro de una sesión, pero tienen un contexto limitado entre sesiones.
 
 *OpenClaw*
@@ -120,7 +139,7 @@ _OpenClaw_ nació a finales del 2025 y resolvió un problema que los desarrollad
 
 _Hermes Agent_ se lanzó en febrero de 2026 por Nous Research, el laboratorio detrás de las familias de modelos Hermes, Nomos y Psyche.
 
-Mientras _OpenClaw_ se centró en la amplitud de las integraciones, Hermes Agent se enfocó en la profundidad del aprendizaje. El eslogan del proyecto, “el agente que crece contigo”, describe una arquitectura construida alrededor de un ciclo de aprendizaje cerrado. Tres componentes hacen que este ciclo funcione.
+Mientras _OpenClaw_ se centró en la amplitud de las integraciones, Hermes Agent se enfocó en la profundidad del aprendizaje. El eslogan del proyecto, "el agente que crece contigo", describe una arquitectura construida alrededor de un ciclo de aprendizaje cerrado. Tres componentes hacen que este ciclo funcione.
 
 Primero, memoria persistente. Hermes utiliza búsqueda de texto completo FTS5 sobre todas las sesiones pasadas almacenadas en SQLite, combinada con resúmenes generados por LLM. El agente puede recordar conversaciones de semanas atrás, buscar en su propio historial y construir una comprensión más profunda de quién eres y cómo trabajas. Esto no es un archivo _CLAUDE.md_ que mantienes tú mismo. El agente gestiona su propia memoria con ajustes periódicos.
 
@@ -137,7 +156,7 @@ OpenCode no se limita a responder preguntas; te permite crear comandos personali
 
 *Mirada Hacia el Futuro*
 
-_OpenClaw_, _OpenCode_ y _Hermes Agent_ se entienden mejor como dos prototipos tempranos e influyentes de infraestructura de agentes persistentes. Uno prioriza el ecosistema. El otro prioriza el ciclo de aprendizaje. Ninguno es un producto terminado, pero ambos apuntan hacia un futuro en el que los agentes de IA funcionen como servicios de larga duración en lugar de asistentes limitados a una sesión.
+_OpenClaw_, _OpenCode_ y _Hermes Agent_ se entienden mejor como tres prototipos tempranos e influyentes de infraestructura de agentes persistentes. Uno prioriza el ecosistema. Otro prioriza el ciclo de aprendizaje. Y el tercero la experiencia de terminal. Ninguno es un producto terminado, pero los tres apuntan hacia un futuro en el que los agentes de IA funcionen como servicios de larga duración en lugar de asistentes limitados a una sesión.
 
 == Referencias
 

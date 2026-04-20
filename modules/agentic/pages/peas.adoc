@@ -17,6 +17,37 @@ Al enfrentarnos al diseño de un nuevo agente, debemos responder a cuatro pregun
 La medida de desempeño debe ser externa. Si permitimos que el agente defina su propio éxito, es probable que encuentre un "atajo" para sentirse satisfecho sin haber cumplido su tarea real.
 ====
 
+=== Modelando PEAS en Elixir
+
+El marco PEAS se traduce de forma natural a una estructura de datos en Elixir:
+
+[source, elixir]
+----
+defmodule PEAS do
+  @moduledoc """
+  Estructura para describir formalmente la tarea de un agente.
+  """
+
+  defstruct [
+    :agente,
+    :desempeño,
+    :entorno,
+    :actuadores,
+    :sensores
+  ]
+
+  def taxi_autonomo do
+    %__MODULE__{
+      agente: "Taxi Autónomo",
+      desempeño: [:seguridad, :velocidad, :legalidad, :ahorro],
+      entorno: [:rutas, :trafico, :peatones, :clima],
+      actuadores: [:volante, :acelerador, :freno, :claxon],
+      sensores: [:camaras, :lidar, :gps, :odometro]
+    }
+  end
+end
+----
+
 == Muestrario de Entornos de Tareas
 
 Observemos cómo se descompone la realidad de diferentes agentes bajo este marco:
@@ -52,15 +83,79 @@ Observemos cómo se descompone la realidad de diferentes agentes bajo este marco
 
 == Propiedades del Mundo
 
-No todos los escenarios son igualmente amables. La complejidad de un agente nace, en gran medida, de la naturaleza de su entorno:
+No todos los escenarios son igualmente amables. La complejidad de un agente nace, en gran medida, de la naturaleza de su entorno. Cada propiedad modifica radicalmente las estrategias disponibles:
 
-*   **¿Se ve todo?** (Totalmente vs. Parcialmente observable).
-*   **¿Es predecible?** (Determinista vs. Estocástico).
-*   **¿Es un hecho aislado?** (Episódico vs. Secuencial).
-*   **¿Se detiene el tiempo?** (Estático vs. Dinámico).
-*   **¿Hay otros?** (Agente individual vs. Multi-agente).
+[cols="2,3,3", options="header"]
+|===
+| Propiedad | Descripción | Implicación para el agente
+
+| **Observable** (Total vs. Parcial)
+| ¿Puede el agente ver todo el estado del entorno en cada momento?
+| Si es parcialmente observable, necesita un **modelo interno** para recordar lo que no puede ver.
+
+| **Determinista vs. Estocástico**
+| ¿El siguiente estado está completamente determinado por el estado actual y la acción del agente?
+| En entornos estocásticos, el agente debe razonar sobre **probabilidades** y manejar la incertidumbre.
+
+| **Episódico vs. Secuencial**
+| ¿Cada decisión es independiente, o las acciones actuales afectan las futuras?
+| En entornos secuenciales, el agente debe **planificar a largo plazo** y considerar consecuencias.
+
+| **Estático vs. Dinámico**
+| ¿Se detiene el mundo mientras el agente delibera?
+| En entornos dinámicos, pensar demasiado es una forma de actuar mal. El agente debe balancear velocidad y calidad.
+
+| **Discreto vs. Continuo**
+| ¿Los estados, perceptos y acciones son finitos o infinitos?
+| Los entornos continuos (como la conducción) requieren técnicas de aproximación y muestreo.
+
+| **Agente Único vs. Multi-Agente**
+| ¿Existen otros agentes en el entorno?
+| En sistemas multi-agente surgen fenómenos de cooperación, competencia y comunicación.
+|===
+
+=== Clasificación de los Ejemplos
+
+¿Cómo se comparan los agentes de nuestro muestrario bajo estas propiedades?
+
+[cols="1,^1,^1,^1,^1,^1,^1", options="header"]
+|===
+| Agente | Observable | Determinista | Episódico | Estático | Discreto | Multi-Agente
+
+| Taxi Autónomo
+| Parcial
+| Estocástico
+| Secuencial
+| Dinámico
+| Continuo
+| Sí
+
+| Sistema Médico
+| Parcial
+| Estocástico
+| Secuencial
+| Estático
+| Discreto
+| No
+
+| Clasificador de Piezas
+| Total
+| Determinista
+| Episódico
+| Dinámico
+| Discreto
+| No
+
+| Scribe Docs
+| Total
+| Determinista
+| Episódico
+| Estático
+| Discreto
+| No
+|===
 
 [TIP]
 ====
-Diseñar un agente para un mundo **parcialmente observable** y **estocástico** es el mayor de los retos: el agente debe actuar en la niebla y bajo la incertidumbre del azar.
+Diseñar un agente para un mundo **parcialmente observable** y **estocástico** es el mayor de los retos: el agente debe actuar en la niebla y bajo la incertidumbre del azar. El Taxi Autónomo es, sin duda, el problema que exige la mayor sofisticación de todos los presentados.
 ====

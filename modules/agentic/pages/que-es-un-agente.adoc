@@ -45,6 +45,92 @@ Un agente que no varía su proceder ante un mundo cambiante es poco más que un 
 En su búsqueda de la verdad, el agente racional debe abrazar la **Navaja de Ockham**: ante dos explicaciones que expliquen igual de bien lo observado, la más sencilla suele ser la que refleja la verdadera naturaleza del mundo.
 ====
 
+== Tipos de Agentes: La Escalera de la Sofisticación
+
+No todos los agentes nacen iguales. Existe una jerarquía natural que va desde el más simple reflejo hasta la deliberación profunda. Cada escalón añade una capa de complejidad que le permite enfrentar entornos cada vez más hostiles.
+
+[.text-center]
+[mermaid]
+....
+graph TB
+    subgraph "Escalera de Complejidad"
+        R["Reactivo Simple<br/>Reglas condición-acción"] --> M["Basado en Modelo<br/>Estado interno del mundo"]
+        M --> O["Basado en Objetivos<br/>Planificación hacia metas"]
+        O --> U["Basado en Utilidad<br/>Maximización de satisfacción"]
+    end
+....
+
+=== Agente Reactivo Simple
+
+Es el más elemental. Opera con reglas directas de la forma _"si percepto X, entonces acción Y"_. No tiene memoria ni modelo del mundo. Funciona admirablemente en entornos totalmente observables y deterministas, pero se pierde en la niebla de la incertidumbre.
+
+[source, elixir]
+----
+defmodule Agente.Reactivo do
+  @moduledoc """
+  Un agente reactivo simple que selecciona acciones
+  basándose exclusivamente en el percepto actual.
+  """
+
+  @doc "Mapea perceptos a acciones mediante pattern matching."
+  def actuar(:sucio), do: :aspirar
+  def actuar(:limpio), do: :mover
+  def actuar(_desconocido), do: :no_operar
+end
+
+# Uso:
+Agente.Reactivo.actuar(:sucio)   # => :aspirar
+Agente.Reactivo.actuar(:limpio)  # => :mover
+----
+
+=== Agente Basado en Modelo
+
+Cuando el mundo no se muestra por completo, el agente necesita construir un **modelo interno** de aquello que no puede ver. Mantiene un **estado** que actualiza con cada nuevo percepto, permitiéndole recordar lo que ya no está frente a sus ojos.
+
+[source, elixir]
+----
+defmodule Agente.ConModelo do
+  @moduledoc """
+  Un agente que mantiene un estado interno del mundo
+  para tomar decisiones informadas.
+  """
+
+  defstruct [:posicion, :mapa, :historial]
+
+  def nuevo(posicion_inicial) do
+    %__MODULE__{
+      posicion: posicion_inicial,
+      mapa: %{},
+      historial: []
+    }
+  end
+
+  def percibir(agente, percepto) do
+    mapa_actualizado = Map.put(agente.mapa, agente.posicion, percepto)
+    %{agente | mapa: mapa_actualizado, historial: [percepto | agente.historial]}
+  end
+
+  def actuar(%{mapa: mapa, posicion: pos} = agente) do
+    case Map.get(mapa, pos) do
+      :sucio -> {:aspirar, agente}
+      :limpio -> {:mover, %{agente | posicion: siguiente_posicion(pos)}}
+      nil -> {:explorar, agente}
+    end
+  end
+
+  defp siguiente_posicion(:izquierda), do: :derecha
+  defp siguiente_posicion(:derecha), do: :izquierda
+end
+----
+
+=== Agente Basado en Objetivos
+
+Este agente no solo sabe cómo es el mundo, sino que sabe **a dónde quiere llegar**. Puede planificar, considerar las consecuencias de sus acciones y buscar la secuencia que lo acerque a su meta. Es el primer escalón donde aparece la _deliberación_.
+
+=== Agente Basado en Utilidad
+
+El más refinado de todos. No le basta con alcanzar un objetivo; busca alcanzarlo de la **mejor manera posible**. Posee una **función de utilidad** que asigna un valor numérico a cada estado del mundo, y su misión es maximizar esa utilidad esperada. Es el modelo que más se acerca al ideal de la racionalidad económica.
+
 == Las Cuatro Visiones de la Inteligencia
 
 A lo largo de la historia, hemos intentado definir la Inteligencia Artificial a través de cuatro cristales distintos, dependiendo de si buscamos imitar la humanidad o alcanzar la razón pura:

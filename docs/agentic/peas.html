@@ -67,6 +67,15 @@
 <ul class="nav-list">
   <li class="nav-item" data-depth="0">
     <button class="nav-item-toggle"></button>
+    <span class="nav-text">Inicio</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../index.html">Bienvenida</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
     <span class="nav-text">Programación Agéntica</span>
 <ul class="nav-list">
   <li class="nav-item" data-depth="1">
@@ -80,6 +89,24 @@
   </li>
   <li class="nav-item" data-depth="1">
     <a class="nav-link" href="instalar-elixir-vscode.html">Configurar VSCode con Elixir y OpenCode</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Sensores y Percepción</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="ocr.html">OCR en Elixir</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Proyectos</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="proyecto-ocr.html">Script de OCR</a>
   </li>
 </ul>
   </li>
@@ -183,6 +210,39 @@
 </tr>
 </table>
 </div>
+<div class="sect2">
+<h3 id="modelando-peas-en-elixir"><a class="anchor" href="#modelando-peas-en-elixir"></a>Modelando PEAS en Elixir</h3>
+<div class="paragraph">
+<p>El marco PEAS se traduce de forma natural a una estructura de datos en Elixir:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">defmodule PEAS do
+  @moduledoc """
+  Estructura para describir formalmente la tarea de un agente.
+  """
+
+  defstruct [
+    :agente,
+    :desempeño,
+    :entorno,
+    :actuadores,
+    :sensores
+  ]
+
+  def taxi_autonomo do
+    %__MODULE__{
+      agente: "Taxi Autónomo",
+      desempeño: [:seguridad, :velocidad, :legalidad, :ahorro],
+      entorno: [:rutas, :trafico, :peatones, :clima],
+      actuadores: [:volante, :acelerador, :freno, :claxon],
+      sensores: [:camaras, :lidar, :gps, :odometro]
+    }
+  end
+end</code></pre>
+</div>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -245,27 +305,119 @@
 <h2 id="propiedades-del-mundo"><a class="anchor" href="#propiedades-del-mundo"></a>Propiedades del Mundo</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>No todos los escenarios son igualmente amables. La complejidad de un agente nace, en gran medida, de la naturaleza de su entorno:</p>
+<p>No todos los escenarios son igualmente amables. La complejidad de un agente nace, en gran medida, de la naturaleza de su entorno. Cada propiedad modifica radicalmente las estrategias disponibles:</p>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p><strong>¿Se ve todo?</strong> (Totalmente vs. Parcialmente observable).</p>
-</li>
-<li>
-<p><strong>¿Es predecible?</strong> (Determinista vs. Estocástico).</p>
-</li>
-<li>
-<p><strong>¿Es un hecho aislado?</strong> (Episódico vs. Secuencial).</p>
-</li>
-<li>
-<p><strong>¿Se detiene el tiempo?</strong> (Estático vs. Dinámico).</p>
-</li>
-<li>
-<p><strong>¿Hay otros?</strong> (Agente individual vs. Multi-agente).</p>
-</li>
-</ul>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 37.5%;">
+<col style="width: 37.5%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Propiedad</th>
+<th class="tableblock halign-left valign-top">Descripción</th>
+<th class="tableblock halign-left valign-top">Implicación para el agente</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Observable</strong> (Total vs. Parcial)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">¿Puede el agente ver todo el estado del entorno en cada momento?</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Si es parcialmente observable, necesita un <strong>modelo interno</strong> para recordar lo que no puede ver.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Determinista vs. Estocástico</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">¿El siguiente estado está completamente determinado por el estado actual y la acción del agente?</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">En entornos estocásticos, el agente debe razonar sobre <strong>probabilidades</strong> y manejar la incertidumbre.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Episódico vs. Secuencial</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">¿Cada decisión es independiente, o las acciones actuales afectan las futuras?</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">En entornos secuenciales, el agente debe <strong>planificar a largo plazo</strong> y considerar consecuencias.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Estático vs. Dinámico</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">¿Se detiene el mundo mientras el agente delibera?</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">En entornos dinámicos, pensar demasiado es una forma de actuar mal. El agente debe balancear velocidad y calidad.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Discreto vs. Continuo</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">¿Los estados, perceptos y acciones son finitos o infinitos?</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Los entornos continuos (como la conducción) requieren técnicas de aproximación y muestreo.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Agente Único vs. Multi-Agente</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">¿Existen otros agentes en el entorno?</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">En sistemas multi-agente surgen fenómenos de cooperación, competencia y comunicación.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="sect2">
+<h3 id="clasificación-de-los-ejemplos"><a class="anchor" href="#clasificación-de-los-ejemplos"></a>Clasificación de los Ejemplos</h3>
+<div class="paragraph">
+<p>¿Cómo se comparan los agentes de nuestro muestrario bajo estas propiedades?</p>
 </div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 14.2857%;">
+<col style="width: 14.2857%;">
+<col style="width: 14.2857%;">
+<col style="width: 14.2857%;">
+<col style="width: 14.2857%;">
+<col style="width: 14.2857%;">
+<col style="width: 14.2858%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Agente</th>
+<th class="tableblock halign-center valign-top">Observable</th>
+<th class="tableblock halign-center valign-top">Determinista</th>
+<th class="tableblock halign-center valign-top">Episódico</th>
+<th class="tableblock halign-center valign-top">Estático</th>
+<th class="tableblock halign-center valign-top">Discreto</th>
+<th class="tableblock halign-center valign-top">Multi-Agente</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Taxi Autónomo</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">Parcial</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">Estocástico</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">Secuencial</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">Dinámico</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">Continuo</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">Sí</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Sistema Médico</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">Parcial</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">Estocástico</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">Secuencial</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">Estático</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">Discreto</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">No</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Clasificador de Piezas</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">Total</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">Determinista</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">Episódico</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">Dinámico</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">Discreto</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">No</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Scribe Docs</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">Total</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">Determinista</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">Episódico</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">Estático</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">Discreto</p></td>
+<td class="tableblock halign-center valign-top"><p class="tableblock">No</p></td>
+</tr>
+</tbody>
+</table>
 <div class="admonitionblock tip">
 <table>
 <tr>
@@ -274,11 +426,12 @@
 </td>
 <td class="content">
 <div class="paragraph">
-<p>Diseñar un agente para un mundo <strong>parcialmente observable</strong> y <strong>estocástico</strong> es el mayor de los retos: el agente debe actuar en la niebla y bajo la incertidumbre del azar.</p>
+<p>Diseñar un agente para un mundo <strong>parcialmente observable</strong> y <strong>estocástico</strong> es el mayor de los retos: el agente debe actuar en la niebla y bajo la incertidumbre del azar. El Taxi Autónomo es, sin duda, el problema que exige la mayor sofisticación de todos los presentados.</p>
 </div>
 </td>
 </tr>
 </table>
+</div>
 </div>
 </div>
 </div>

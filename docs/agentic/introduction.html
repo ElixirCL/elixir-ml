@@ -67,6 +67,15 @@
 <ul class="nav-list">
   <li class="nav-item" data-depth="0">
     <button class="nav-item-toggle"></button>
+    <span class="nav-text">Inicio</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../index.html">Bienvenida</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
     <span class="nav-text">Programación Agéntica</span>
 <ul class="nav-list">
   <li class="nav-item is-current-page" data-depth="1">
@@ -80,6 +89,24 @@
   </li>
   <li class="nav-item" data-depth="1">
     <a class="nav-link" href="instalar-elixir-vscode.html">Configurar VSCode con Elixir y OpenCode</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Sensores y Percepción</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="ocr.html">OCR en Elixir</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Proyectos</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="proyecto-ocr.html">Script de OCR</a>
   </li>
 </ul>
   </li>
@@ -168,9 +195,9 @@
 <p>A partir de esto, el agente decide cómo actuar.</p>
 </div>
 <div class="paragraph">
-<p>En un programa tradicional, se sigue reglas exactas.
-Mientras que en un programa agéntico, se persigue objetivos y
-decide cómo alcanzarlos.</p>
+<p>En un programa tradicional, se siguen reglas exactas.
+Mientras que en un programa agéntico, se persiguen objetivos y
+se decide cómo alcanzarlos.</p>
 </div>
 <div class="paragraph">
 <p>Un agente puede, por ejemplo:</p>
@@ -194,13 +221,37 @@ decide cómo alcanzarlos.</p>
 </li>
 </ul>
 </div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="por-qué-elixir"><a class="anchor" href="#por-qué-elixir"></a>¿Por qué Elixir?</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Elixir no es solo un lenguaje funcional elegante; su arquitectura lo convierte en un candidato natural para la programación agéntica:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Concurrencia masiva:</strong> Los procesos ligeros de la BEAM permiten ejecutar miles de agentes simultáneos sin colapsar los recursos del sistema. Cada agente puede vivir en su propio proceso, con su propia memoria y ciclo de vida.</p>
+</li>
+<li>
+<p><strong>Tolerancia a fallos:</strong> La filosofía <em>"let it crash"</em> y los árboles de supervisión garantizan que si un agente falla, el sistema se recupera automáticamente. Un agente que se equivoca no arrastra a los demás.</p>
+</li>
+<li>
+<p><strong>Pattern matching:</strong> La coincidencia de patrones es ideal para modelar la función de un agente: dado un percepto, seleccionar la acción correcta.</p>
+</li>
+<li>
+<p><strong>Distribución:</strong> La BEAM puede ejecutar procesos en múltiples nodos, permitiendo sistemas multi-agente distribuidos de forma nativa.</p>
+</li>
+</ul>
+</div>
 <div class="paragraph">
 <p><strong>Componentes típicos</strong></p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p><strong>Modelo de lenguaje (LLM)</strong>: el “cerebro”</p>
+<p><strong>Modelo de lenguaje (LLM)</strong>: el "cerebro"</p>
 </li>
 <li>
 <p><strong>Memoria</strong>: corto y largo plazo</p>
@@ -285,41 +336,60 @@ de <a href="https://cursor.com/es/docs/models-and-pricing">Cursor</a>, ya que la
 más nuevos abaratan los costos de los modelos anteriores.</p>
 </div>
 <div class="sect2">
-<h3 id="modelos-populares"><a class="anchor" href="#modelos-populares"></a>Modelos Populares</h3>
+<h3 id="herramientas-agénticas"><a class="anchor" href="#herramientas-agénticas"></a>Herramientas Agénticas</h3>
+<div class="paragraph">
+<p>Las herramientas agénticas son los entornos de desarrollo que integran modelos de lenguaje para asistir en la programación de forma interactiva.</p>
+</div>
 <div class="paragraph">
 <p>Se puede ver los últimos modelos en la siguiente web <a href="https://hasbeenreleased.com/">Has been Released</a>.</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>Claude Code</p>
+<p><a href="https://claude.ai/code"><strong>Claude Code</strong></a> — Agente de terminal de Anthropic, especializado en tareas de código complejas.</p>
 </li>
 <li>
-<p>Cursor</p>
+<p><a href="https://cursor.com/"><strong>Cursor</strong></a> — Editor de código con IA integrada, basado en VS Code.</p>
 </li>
 <li>
-<p>Codex</p>
-</li>
-<li>
-<p>Sonnet</p>
-</li>
-<li>
-<p>Haiku</p>
+<p><a href="https://openai.com/codex"><strong>Codex</strong></a> — Motor de generación de código de OpenAI, base de GitHub Copilot.</p>
 </li>
 </ul>
 </div>
 </div>
 <div class="sect2">
-<h3 id="se-puede-instalar-modelos-locales"><a class="anchor" href="#se-puede-instalar-modelos-locales"></a>¿Se puede instalar modelos locales?</h3>
+<h3 id="modelos-de-lenguaje-populares"><a class="anchor" href="#modelos-de-lenguaje-populares"></a>Modelos de Lenguaje Populares</h3>
 <div class="paragraph">
-<p>Si bien es posible comprar un computador potente como un <a href="https://www.elladodelmal.com/2024/12/como-montar-tu-propio-servidor-de.html">Mac Mini</a> (Una configuración mínima para poder ejecutar modelos decentes sería un Macbook Pro M4 con 32GB de RAM y 1TB de disco duro).
-e instalar un modelo local como <a href="https://ollama.com/">oLlama</a>, <a href="https://lmstudio.ai/">LMStudio</a> o <a href="https://pinokio.co/">Pinokio</a>. Para simular las capacidades de cómputo de un modelo de subscripción como <a href="https://www.anthropic.com/claude/opus">Opus 4.6</a> se necesitaría una inversión
+<p>Los modelos de lenguaje son las "inteligencias" que alimentan las herramientas agénticas. Cada uno tiene fortalezas distintas:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Sonnet</strong> (Anthropic) — Equilibrio entre velocidad y calidad, ideal para tareas cotidianas.</p>
+</li>
+<li>
+<p><strong>Haiku</strong> (Anthropic) — Modelo ligero y rápido para tareas simples.</p>
+</li>
+<li>
+<p><strong>GPT-4o</strong> (OpenAI) — Modelo multimodal con capacidad de procesamiento de imágenes y audio.</p>
+</li>
+<li>
+<p><strong>Gemini</strong> (Google) — Modelo con ventana de contexto extensa, ideal para análisis de proyectos grandes.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="se-pueden-instalar-modelos-locales"><a class="anchor" href="#se-pueden-instalar-modelos-locales"></a>¿Se pueden instalar modelos locales?</h3>
+<div class="paragraph">
+<p>Si bien es posible comprar un computador potente como un <a href="https://www.elladodelmal.com/2024/12/como-montar-tu-propio-servidor-de.html">Mac Mini</a> (una configuración mínima para poder ejecutar modelos decentes sería un Macbook Pro M4 con 32GB de RAM y 1TB de disco duro)
+e instalar un modelo local como <a href="https://ollama.com/">oLlama</a>, <a href="https://lmstudio.ai/">LMStudio</a> o <a href="https://pinokio.co/">Pinokio</a>, para simular las capacidades de cómputo de un modelo de suscripción como <a href="https://www.anthropic.com/claude/opus">Opus 4.6</a> se necesitaría una inversión
 grande en equipos que no todos tienen la capacidad económica de costear.</p>
 </div>
 <div class="paragraph">
-<p>Por lo que utilizar modelos locales, si bien es factible. Para entornos
+<p>Por lo que utilizar modelos locales, si bien es factible, para entornos
 de producción y uso profesional es más recomendable las herramientas
-de subscripción disponibles o por lo menos un híbrido entre opciones locales y la nube.</p>
+de suscripción disponibles o por lo menos un híbrido entre opciones locales y la nube.</p>
 </div>
 <iframe width="100%" height="515" src="https://www.youtube.com/embed/GBR6pHZ68Ho?si=ZwYlUv5FLrsumKzY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 </div>
@@ -338,7 +408,7 @@ de subscripción disponibles o por lo menos un híbrido entre opciones locales y
 <div class="sect2">
 <h3 id="hermes-agent-openclaw-opencode"><a class="anchor" href="#hermes-agent-openclaw-opencode"></a>Hermes Agent, OpenClaw, OpenCode</h3>
 <div class="paragraph">
-<p><a href="https://github.com/NousResearch/hermes-agent">Hermes Agent</a>, <a href="https://opencode.ai/">OpenCode</a> y <a href="https://github.com/openclaw/openclaw">OpenClaw</a> son dos herramientas que permiten dar un contexto persistente a los modelos
+<p><a href="https://github.com/NousResearch/hermes-agent">Hermes Agent</a>, <a href="https://opencode.ai/">OpenCode</a> y <a href="https://github.com/openclaw/openclaw">OpenClaw</a> son tres herramientas que permiten dar un contexto persistente a los modelos
 de LLM. Herramientas como <em>Claude Code</em>, <em>Codex</em> y <em>Cursor</em> son potentes dentro de una sesión, pero tienen un contexto limitado entre sesiones.</p>
 </div>
 <div class="paragraph">
@@ -354,7 +424,7 @@ de LLM. Herramientas como <em>Claude Code</em>, <em>Codex</em> y <em>Cursor</em>
 <p><em>Hermes Agent</em> se lanzó en febrero de 2026 por Nous Research, el laboratorio detrás de las familias de modelos Hermes, Nomos y Psyche.</p>
 </div>
 <div class="paragraph">
-<p>Mientras <em>OpenClaw</em> se centró en la amplitud de las integraciones, Hermes Agent se enfocó en la profundidad del aprendizaje. El eslogan del proyecto, “el agente que crece contigo”, describe una arquitectura construida alrededor de un ciclo de aprendizaje cerrado. Tres componentes hacen que este ciclo funcione.</p>
+<p>Mientras <em>OpenClaw</em> se centró en la amplitud de las integraciones, Hermes Agent se enfocó en la profundidad del aprendizaje. El eslogan del proyecto, "el agente que crece contigo", describe una arquitectura construida alrededor de un ciclo de aprendizaje cerrado. Tres componentes hacen que este ciclo funcione.</p>
 </div>
 <div class="paragraph">
 <p>Primero, memoria persistente. Hermes utiliza búsqueda de texto completo FTS5 sobre todas las sesiones pasadas almacenadas en SQLite, combinada con resúmenes generados por LLM. El agente puede recordar conversaciones de semanas atrás, buscar en su propio historial y construir una comprensión más profunda de quién eres y cómo trabajas. Esto no es un archivo <em>CLAUDE.md</em> que mantienes tú mismo. El agente gestiona su propia memoria con ajustes periódicos.</p>
@@ -378,7 +448,7 @@ de LLM. Herramientas como <em>Claude Code</em>, <em>Codex</em> y <em>Cursor</em>
 <p><strong>Mirada Hacia el Futuro</strong></p>
 </div>
 <div class="paragraph">
-<p><em>OpenClaw</em>, <em>OpenCode</em> y <em>Hermes Agent</em> se entienden mejor como dos prototipos tempranos e influyentes de infraestructura de agentes persistentes. Uno prioriza el ecosistema. El otro prioriza el ciclo de aprendizaje. Ninguno es un producto terminado, pero ambos apuntan hacia un futuro en el que los agentes de IA funcionen como servicios de larga duración en lugar de asistentes limitados a una sesión.</p>
+<p><em>OpenClaw</em>, <em>OpenCode</em> y <em>Hermes Agent</em> se entienden mejor como tres prototipos tempranos e influyentes de infraestructura de agentes persistentes. Uno prioriza el ecosistema. Otro prioriza el ciclo de aprendizaje. Y el tercero la experiencia de terminal. Ninguno es un producto terminado, pero los tres apuntan hacia un futuro en el que los agentes de IA funcionen como servicios de larga duración en lugar de asistentes limitados a una sesión.</p>
 </div>
 </div>
 </div>
@@ -402,7 +472,7 @@ de LLM. Herramientas como <em>Claude Code</em>, <em>Codex</em> y <em>Cursor</em>
 </div>
 </div>
 <nav class="pagination">
-  <span class="prev"><a href="../index.html">Elixir ML & LLM</a></span>
+  <span class="prev"><a href="../index.html">Bienvenida</a></span>
   <span class="next"><a href="que-es-un-agente.html">¿Qué es un agente?</a></span>
 </nav>
 </article>

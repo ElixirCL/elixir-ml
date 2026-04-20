@@ -8,7 +8,7 @@ Para cualquier observador de la naturaleza, los datos en bruto son simplemente u
 
 Antes de analizar sistemas complejos, debemos localizar el punto de equilibrio donde la distribución parece descansar.
 
-1. **Media Aritmética ($\bar{x}$)**: Representa el centro de gravedad de nuestros datos. Es el valor que esperaríamos encontrar bajo condiciones de perfecta uniformidad, aunque debemos tener cuidado, pues es sensible a valores extremos que pueden distorsionar la imagen de la realidad.
+1. **Media Aritmética (stem:[\bar{x}])**: Representa el centro de gravedad de nuestros datos. Es el valor que esperaríamos encontrar bajo condiciones de perfecta uniformidad, aunque debemos tener cuidado, pues es sensible a valores extremos que pueden distorsionar la imagen de la realidad.
 [stem]
 --
 \bar{x} = \frac{1}{n} \sum_{i=1}^n x_i
@@ -16,7 +16,9 @@ Antes de analizar sistemas complejos, debemos localizar el punto de equilibrio d
 
 2. **Mediana**: Es el valor que divide nuestro conjunto de datos exactamente a la mitad. A diferencia de la media, posee una notable robustez; no se deja engañar fácilmente por el ruido o los valores anómalos.
 
-3. **Media Ponderada**: Es necesaria cuando, por la naturaleza de nuestro experimento, decidimos otorgar distinta relevancia o "peso" a cada una de nuestras observaciones.
+3. **Moda**: Es el valor que aparece con mayor frecuencia en nuestra muestra. Un conjunto de datos puede ser unimodal (una sola moda), bimodal o multimodal.
+
+4. **Media Ponderada**: Es necesaria cuando, por la naturaleza de nuestro experimento, decidimos otorgar distinta relevancia o "peso" a cada una de nuestras observaciones.
 [stem]
 --
 \bar{x}_w = \frac{\sum w_i x_i}{\sum w_i}
@@ -26,13 +28,18 @@ Antes de analizar sistemas complejos, debemos localizar el punto de equilibrio d
 
 Conocer el centro es solo el comienzo; ahora debemos cuantificar cuánto se alejan los datos de ese punto medio, tal como mediríamos la dispersión de la luz en un prisma.
 
-=== Varianza ($\sigma^2$) y Desviación Estándar ($\sigma$)
+=== Varianza (stem:[\sigma^2]) y Desviación Estándar (stem:[\sigma])
 La varianza nos da una medida del alejamiento al cuadrado. Sin embargo, para que nuestro análisis sea coherente con las unidades de medida que estamos observando, preferimos usar la desviación estándar. Es el indicador fundamental de la precisión y consistencia de nuestra muestra.
 
 [stem]
 --
 \sigma^2 = \frac{1}{n} \sum_{i=1}^n (x_i - \bar{x})^2
 --
+
+[NOTE]
+====
+Cuando trabajamos con una **muestra** en vez de una población completa, se utiliza la **cuasivarianza** stem:[S^2], dividiendo por stem:[n-1] en vez de stem:[n]. Esta corrección (llamada corrección de Bessel) compensa el sesgo de estimar la dispersión poblacional a partir de datos limitados.
+====
 
 === Rango Intercuartílico (IQR)
 Esta medida se concentra en la zona de mayor densidad, ignorando los extremos. Es nuestra base más firme para determinar qué puntos son simples anomalías que no pertenecen al patrón principal.
@@ -43,26 +50,43 @@ IQR = Q_3 - Q_1
 
 [TIP]
 ====
-Es una regla de observación muy útil considerar como "anómalo" (*outlier*) a cualquier valor que se sitúe fuera de estos límites: $[Q_1 - 1.5 \cdot IQR, Q_3 + 1.5 \cdot IQR]$. No es un capricho, sino una forma lógica de discernir el orden.
+Es una regla de observación muy útil considerar como "anómalo" (*outlier*) a cualquier valor que se sitúe fuera de estos límites: stem:[[Q_1 - 1.5 \cdot IQR, \; Q_3 + 1.5 \cdot IQR]]. No es un capricho, sino una forma lógica de discernir el orden.
 ====
 
 == La Forma de la Distribución
 
 Una vez que entendemos la ubicación y la dispersión, debemos contemplar la forma misma de nuestra "campana" de datos.
 
-=== Coeficiente de Asimetría de Fisher ($G_1$)
+=== Coeficiente de Asimetría de Fisher (stem:[G_1])
 Este coeficiente nos indica si la masa de nuestras observaciones se inclina hacia un lado u otro del espectro, rompiendo la simetría.
 [stem]
 --
 G_1 = \frac{\frac{1}{n} \sum_{i=1}^n (x_i - \bar{x})^3}{\sigma^3}
 --
-*   **$G_1 = 0$**: Una estructura perfectamente equilibrada y simétrica.
-*   **$G_1 > 0$**: Los datos muestran una "cola" que se estira hacia la derecha.
-*   **$G_1 < 0$**: La inclinación ocurre hacia la izquierda.
+*   **stem:[G_1 = 0]**: Una estructura perfectamente equilibrada y simétrica.
+*   **stem:[G_1 > 0]**: Los datos muestran una "cola" que se estira hacia la derecha.
+*   **stem:[G_1 < 0]**: La inclinación ocurre hacia la izquierda.
+
+=== Curtosis (stem:[K])
+Mientras la asimetría mide la inclinación, la **curtosis** mide el "peso" de las colas de la distribución, es decir, cuán probable es observar valores extremos.
+
+[stem]
+--
+K = \frac{\frac{1}{n} \sum_{i=1}^n (x_i - \bar{x})^4}{\sigma^4}
+--
+
+*   **stem:[K = 3]** (o exceso stem:[= 0]): **Mesocúrtica**. Colas similares a la distribución Normal.
+*   **stem:[K > 3]**: **Leptocúrtica**. Colas pesadas, mayor probabilidad de valores extremos. Frecuente en datos financieros.
+*   **stem:[K < 3]**: **Platicúrtica**. Colas ligeras, los datos se concentran cerca del centro.
+
+[NOTE]
+====
+En Machine Learning, detectar distribuciones leptocúrticas es crucial: los valores extremos pueden desestabilizar el entrenamiento de un modelo si no se tratan adecuadamente (normalización, clipping de gradientes, etc.).
+====
 
 == Relación entre Variables: El Diálogo de los Datos
 
-Cuando observamos dos variables ($X$ e $Y$) al mismo tiempo, buscamos comprender la afinidad o dependencia que existe entre ellas.
+Cuando observamos dos variables (stem:[X] e stem:[Y]) al mismo tiempo, buscamos comprender la afinidad o dependencia que existe entre ellas.
 
 1. **Covarianza**: Nos indica la dirección de esta relación. Si ambas crecen al unísono, o si una desciende mientras la otra se eleva.
 [stem]
@@ -70,7 +94,7 @@ Cuando observamos dos variables ($X$ e $Y$) al mismo tiempo, buscamos comprender
 cov(X, Y) = \frac{1}{n} \sum (x_i - \bar{x})(y_i - \bar{y})
 --
 
-2. **Coeficiente de Correlación de Pearson ($r$)**: Es una escala preciosa que va del $-1$ al $1$, permitiéndonos ver qué tan fuerte es el vínculo lineal entre nuestras dos magnitudes estudiadas.
+2. **Coeficiente de Correlación de Pearson (stem:[r])**: Es una escala preciosa que va del stem:[-1] al stem:[1], permitiéndonos ver qué tan fuerte es el vínculo lineal entre nuestras dos magnitudes estudiadas.
 [stem]
 --
 r = \frac{cov(X, Y)}{\sigma_X \sigma_Y}
@@ -97,7 +121,83 @@ data = Nx.tensor([10, 12, 23, 23, 16, 23, 21, 16])
 media = Nx.mean(data)
 mediana = Stats.median(data)
 varianza = Nx.variance(data)
+desviacion = Nx.standard_deviation(data)
 ----
+
+=== Detección de Outliers con IQR
+
+[source, elixir]
+----
+# Cálculo del Rango Intercuartílico
+sorted = Nx.sort(data)
+n = Nx.size(sorted)
+
+q1 = Nx.slice(sorted, [div(n, 4)], [1]) |> Nx.to_number()
+q3 = Nx.slice(sorted, [3 * div(n, 4)], [1]) |> Nx.to_number()
+iqr = q3 - q1
+
+# Límites para detección de anomalías
+limite_inf = q1 - 1.5 * iqr
+limite_sup = q3 + 1.5 * iqr
+
+# Filtrar outliers
+outliers = Nx.to_flat_list(data) 
+  |> Enum.filter(fn x -> x < limite_inf or x > limite_sup end)
+----
+
+=== Covarianza y Correlación
+
+[source, elixir]
+----
+# Dos variables: horas de estudio y calificación
+x = Nx.tensor([2.0, 4.0, 6.0, 8.0, 10.0])
+y = Nx.tensor([50.0, 60.0, 70.0, 85.0, 95.0])
+
+# Covarianza manual
+media_x = Nx.mean(x)
+media_y = Nx.mean(y)
+cov_xy = Nx.mean(Nx.multiply(Nx.subtract(x, media_x), Nx.subtract(y, media_y)))
+
+# Correlación de Pearson
+sigma_x = Nx.standard_deviation(x)
+sigma_y = Nx.standard_deviation(y)
+r = Nx.divide(cov_xy, Nx.multiply(sigma_x, sigma_y))
+----
+
+== Compendio: Estadística Descriptiva con Nx y Scholar
+
+[cols="2,3,3", options="header"]
+|===
+| Medida | Fórmula | Función Elixir
+
+| Media
+| stem:[\bar{x} = \frac{1}{n}\sum x_i]
+| `Nx.mean/1`
+
+| Mediana
+| Valor central ordenado
+| `Scholar.Stats.median/1`
+
+| Varianza
+| stem:[\sigma^2 = \frac{1}{n}\sum(x_i - \bar{x})^2]
+| `Nx.variance/1`
+
+| Desviación Estándar
+| stem:[\sigma = \sqrt{\sigma^2}]
+| `Nx.standard_deviation/1`
+
+| Mínimo / Máximo
+| —
+| `Nx.reduce_min/1`, `Nx.reduce_max/1`
+
+| Suma
+| stem:[\sum x_i]
+| `Nx.sum/1`
+
+| Ordenar
+| —
+| `Nx.sort/1`
+|===
 
 [TIP]
 ====

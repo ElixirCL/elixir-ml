@@ -3,3 +3,9 @@
 * xref:que-es-un-agente.adoc[¿Qué es un agente?]
 * xref:peas.adoc[PEAS: Descripción de Tareas]
 * xref:instalar-elixir-vscode.adoc[Configurar VSCode con Elixir y OpenCode]
+
+.Sensores y Percepción
+* xref:ocr.adoc[OCR en Elixir]
+
+.Proyectos
+* xref:proyecto-ocr.adoc[Script de OCR]

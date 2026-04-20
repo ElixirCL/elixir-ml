@@ -67,6 +67,15 @@
 <ul class="nav-list">
   <li class="nav-item" data-depth="0">
     <button class="nav-item-toggle"></button>
+    <span class="nav-text">Inicio</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../index.html">Bienvenida</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
     <span class="nav-text">Programación Agéntica</span>
 <ul class="nav-list">
   <li class="nav-item" data-depth="1">
@@ -80,6 +89,24 @@
   </li>
   <li class="nav-item" data-depth="1">
     <a class="nav-link" href="instalar-elixir-vscode.html">Configurar VSCode con Elixir y OpenCode</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Sensores y Percepción</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="ocr.html">OCR en Elixir</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Proyectos</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="proyecto-ocr.html">Script de OCR</a>
   </li>
 </ul>
   </li>
@@ -228,6 +255,98 @@
 </td>
 </tr>
 </table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="tipos-de-agentes-la-escalera-de-la-sofisticación"><a class="anchor" href="#tipos-de-agentes-la-escalera-de-la-sofisticación"></a>Tipos de Agentes: La Escalera de la Sofisticación</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>No todos los agentes nacen iguales. Existe una jerarquía natural que va desde el más simple reflejo hasta la deliberación profunda. Cada escalón añade una capa de complejidad que le permite enfrentar entornos cada vez más hostiles.</p>
+</div>
+<div class="imageblock text-center kroki-format-svg kroki">
+<div class="content">
+<img src="_images/diag-4cc79111a8c6c343b89204b7156805155d35a082.svg" alt="Diagram">
+</div>
+</div>
+<div class="sect2">
+<h3 id="agente-reactivo-simple"><a class="anchor" href="#agente-reactivo-simple"></a>Agente Reactivo Simple</h3>
+<div class="paragraph">
+<p>Es el más elemental. Opera con reglas directas de la forma <em>"si percepto X, entonces acción Y"</em>. No tiene memoria ni modelo del mundo. Funciona admirablemente en entornos totalmente observables y deterministas, pero se pierde en la niebla de la incertidumbre.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">defmodule Agente.Reactivo do
+  @moduledoc """
+  Un agente reactivo simple que selecciona acciones
+  basándose exclusivamente en el percepto actual.
+  """
+
+  @doc "Mapea perceptos a acciones mediante pattern matching."
+  def actuar(:sucio), do: :aspirar
+  def actuar(:limpio), do: :mover
+  def actuar(_desconocido), do: :no_operar
+end
+
+# Uso:
+Agente.Reactivo.actuar(:sucio)   # =&gt; :aspirar
+Agente.Reactivo.actuar(:limpio)  # =&gt; :mover</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="agente-basado-en-modelo"><a class="anchor" href="#agente-basado-en-modelo"></a>Agente Basado en Modelo</h3>
+<div class="paragraph">
+<p>Cuando el mundo no se muestra por completo, el agente necesita construir un <strong>modelo interno</strong> de aquello que no puede ver. Mantiene un <strong>estado</strong> que actualiza con cada nuevo percepto, permitiéndole recordar lo que ya no está frente a sus ojos.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-elixir hljs" data-lang="elixir">defmodule Agente.ConModelo do
+  @moduledoc """
+  Un agente que mantiene un estado interno del mundo
+  para tomar decisiones informadas.
+  """
+
+  defstruct [:posicion, :mapa, :historial]
+
+  def nuevo(posicion_inicial) do
+    %__MODULE__{
+      posicion: posicion_inicial,
+      mapa: %{},
+      historial: []
+    }
+  end
+
+  def percibir(agente, percepto) do
+    mapa_actualizado = Map.put(agente.mapa, agente.posicion, percepto)
+    %{agente | mapa: mapa_actualizado, historial: [percepto | agente.historial]}
+  end
+
+  def actuar(%{mapa: mapa, posicion: pos} = agente) do
+    case Map.get(mapa, pos) do
+      :sucio -&gt; {:aspirar, agente}
+      :limpio -&gt; {:mover, %{agente | posicion: siguiente_posicion(pos)}}
+      nil -&gt; {:explorar, agente}
+    end
+  end
+
+  defp siguiente_posicion(:izquierda), do: :derecha
+  defp siguiente_posicion(:derecha), do: :izquierda
+end</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="agente-basado-en-objetivos"><a class="anchor" href="#agente-basado-en-objetivos"></a>Agente Basado en Objetivos</h3>
+<div class="paragraph">
+<p>Este agente no solo sabe cómo es el mundo, sino que sabe <strong>a dónde quiere llegar</strong>. Puede planificar, considerar las consecuencias de sus acciones y buscar la secuencia que lo acerque a su meta. Es el primer escalón donde aparece la <em>deliberación</em>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="agente-basado-en-utilidad"><a class="anchor" href="#agente-basado-en-utilidad"></a>Agente Basado en Utilidad</h3>
+<div class="paragraph">
+<p>El más refinado de todos. No le basta con alcanzar un objetivo; busca alcanzarlo de la <strong>mejor manera posible</strong>. Posee una <strong>función de utilidad</strong> que asigna un valor numérico a cada estado del mundo, y su misión es maximizar esa utilidad esperada. Es el modelo que más se acerca al ideal de la racionalidad económica.</p>
+</div>
 </div>
 </div>
 </div>

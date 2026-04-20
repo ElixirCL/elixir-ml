@@ -6,15 +6,15 @@ Es un verdadero placer observar cómo el pensamiento humano, al igual que los fe
 
 == ¿Qué es una Proposición?
 
-Llamamos **proposición** a cualquier afirmación que posea la maravillosa propiedad de ser, sin asomo de duda, verdadera ($V$) o falsa ($F$). En este estudio, no nos detendremos tanto en el significado literario de las palabras, sino en la fuerza de su **valor de verdad**.
+Llamamos **proposición** a cualquier afirmación que posea la maravillosa propiedad de ser, sin asomo de duda, verdadera (stem:[V]) o falsa (stem:[F]). En este estudio, no nos detendremos tanto en el significado literario de las palabras, sino en la fuerza de su **valor de verdad**.
 
 [cols="1,1,1", options="header"]
 |===
 | Expresión | ¿Es Proposición? | Valor de Verdad
-| "Elixir corre sobre la BEAM" | Sí | $V$
-| "$2 + 2 = 5$" | Sí | $F$
+| "Elixir corre sobre la BEAM" | Sí | stem:[V]
+| "stem:[2 + 2 = 5]" | Sí | stem:[F]
 | "¡Qué maravilloso es el mundo!" | No | Exclamación
-| "$x + 5 = 10$" | No | Enunciado abierto (depende de $x$)
+| "stem:[x + 5 = 10]" | No | Enunciado abierto (depende de stem:[x])
 |===
 
 [NOTE]
@@ -26,64 +26,185 @@ En el arte de la programación, estas proposiciones son las que dirigen el flujo
 
 Para formar pensamientos más complejos, debemos unir nuestras proposiciones simples mediante **conectivos**, tal como unimos cables para que la corriente fluya.
 
-=== Negación ($\neg$)
-Es un acto sencillo pero potente: invierte el valor de lo que se afirma. Si $p$ es una verdad, $\neg p$ será, por necesidad natural, una falsedad.
+=== Negación (stem:[\neg])
+Es un acto sencillo pero potente: invierte el valor de lo que se afirma. Si stem:[p] es una verdad, stem:[\neg p] será, por necesidad natural, una falsedad.
 
-=== Conjunción ($\land$)
-Es nuestro "y" cotidiano. Solo brilla con la verdad cuando **ambas** partes que la componen son, por sí mismas, verdaderas.
+[cols="^1,^1", options="header"]
+|===
+| stem:[p] | stem:[\neg p]
+| stem:[V] | stem:[F]
+| stem:[F] | stem:[V]
+|===
 
 [source, elixir]
 ----
-# Ejemplo en Elixir
-true and false # => false
+# La negación en Elixir
+not true   # => false
+not false  # => true
 ----
 
-=== Disyunción ($\lor$)
+=== Conjunción (stem:[\land])
+Es nuestro "y" cotidiano. Solo brilla con la verdad cuando **ambas** partes que la componen son, por sí mismas, verdaderas.
+
+[cols="^1,^1,^2", options="header"]
+|===
+| stem:[p] | stem:[q] | stem:[p \land q]
+| stem:[V] | stem:[V] | stem:[V]
+| stem:[V] | stem:[F] | stem:[F]
+| stem:[F] | stem:[V] | stem:[F]
+| stem:[F] | stem:[F] | stem:[F]
+|===
+
+[source, elixir]
+----
+# La conjunción en Elixir
+true and true   # => true
+true and false  # => false
+----
+
+=== Disyunción (stem:[\lor])
 Es el "o" de las posibilidades. Basta con que **al menos una** de las proposiciones sea verdadera para que todo el conjunto lo sea.
 
-=== Implicación ($\to$)
-"Si sucede esto, entonces aquello". Es la ley de la consecuencia. Fíjense bien: solo se considera falsa cuando la promesa se rompe, es decir, cuando partiendo de una verdad ($p$) llegamos a una falsedad ($q$).
+[cols="^1,^1,^2", options="header"]
+|===
+| stem:[p] | stem:[q] | stem:[p \lor q]
+| stem:[V] | stem:[V] | stem:[V]
+| stem:[V] | stem:[F] | stem:[V]
+| stem:[F] | stem:[V] | stem:[V]
+| stem:[F] | stem:[F] | stem:[F]
+|===
+
+[source, elixir]
+----
+# La disyunción en Elixir
+true or false  # => true
+false or false # => false
+----
+
+=== Implicación (stem:[\to])
+"Si sucede esto, entonces aquello". Es la ley de la consecuencia. Fíjense bien: solo se considera falsa cuando la promesa se rompe, es decir, cuando partiendo de una verdad (stem:[p]) llegamos a una falsedad (stem:[q]).
 
 [IMPORTANT]
 ====
 Esta implicación es la base de todo sistema inteligente: `IF (condición) THEN (acción)`. Es la regla que permite a un agente actuar con propósito.
 ====
 
+=== Bicondicional (stem:[\leftrightarrow])
+"Si y solo si". Ambas proposiciones son verdaderas juntas o falsas juntas. Es el conectivo de la equivalencia perfecta.
+
 == Tablas de Verdad: Observando todas las Posibilidades
 
 Las tablas de verdad son como nuestros diarios de laboratorio; nos permiten anotar qué sucede en cada combinación posible de circunstancias.
 
-=== Tabla de la Implicación ($p \to q$)
+=== Tabla de la Implicación (stem:[p \to q])
 
 [cols="^1,^1,^2", options="header"]
 |===
-| $p$ | $q$ | $p \to q$
-| $V$ | $V$ | $V$
-| $V$ | $F$ | **$F$**
-| $F$ | $V$ | $V$
-| $F$ | $F$ | $V$
+| stem:[p] | stem:[q] | stem:[p \to q]
+| stem:[V] | stem:[V] | stem:[V]
+| stem:[V] | stem:[F] | **stem:[F]**
+| stem:[F] | stem:[V] | stem:[V]
+| stem:[F] | stem:[F] | stem:[V]
 |===
 
 [TIP]
 ====
-Es curioso notar que si partimos de algo Falso ($F$), el razonamiento no se rompe y la ley se mantiene Verdadera ($V$). Algunos lo llaman **Verdad Vacua**, y es una de las sutilezas más bellas de la lógica.
+Es curioso notar que si partimos de algo Falso (stem:[F]), el razonamiento no se rompe y la ley se mantiene Verdadera (stem:[V]). Algunos lo llaman **Verdad Vacua**, y es una de las sutilezas más bellas de la lógica.
+====
+
+== Cuantificadores: De lo Particular a lo Universal
+
+Cuando necesitamos expresar afirmaciones sobre conjuntos enteros de elementos (no solo sobre valores específicos), recurrimos a los **cuantificadores**. Son la herramienta que nos permite pasar del "uno" al "todos".
+
+=== Cuantificador Universal (stem:[\forall])
+"**Para todo** elemento stem:[x] del conjunto, se cumple la propiedad stem:[P(x)]."
+
+[stem]
+++++
+\forall x \in \mathbb{N}, \quad x + 0 = x
+++++
+
+Es decir: para todo número natural, sumar cero no lo altera. Basta encontrar **un solo contraejemplo** para demoler una afirmación universal.
+
+=== Cuantificador Existencial (stem:[\exists])
+"**Existe al menos un** elemento stem:[x] del conjunto para el cual se cumple stem:[P(x)]."
+
+[stem]
+++++
+\exists x \in \mathbb{Z}, \quad x^2 = 4
+++++
+
+Es decir: existe un entero cuyo cuadrado es 4 (por ejemplo, stem:[x = 2] o stem:[x = -2]).
+
+[NOTE]
+====
+En el mundo de la IA, los cuantificadores son esenciales para expresar restricciones. Por ejemplo: "Para todo estado del tablero (stem:[\forall]), existe al menos una jugada legal (stem:[\exists])" es una propiedad que un agente de ajedrez debe verificar constantemente.
 ====
 
 == Leyes de la Armonía Lógica (Tautologías)
 
 Existen ciertas formas de pensar que son, sin importar las circunstancias, siempre verdaderas. Conocerlas es como conocer las leyes de la inducción; nos permiten simplificar lo complejo.
 
-### Leyes de De Morgan
+=== Leyes de De Morgan
 Estas leyes nos enseñan cómo negar con elegancia pensamientos compuestos:
 
-1.  $\neg(p \land q) \equiv \neg p \lor \neg q$
-2.  $\neg(p \lor q) \equiv \neg p \land \neg q$
+1.  stem:[\neg(p \land q) \equiv \neg p \lor \neg q]
+2.  stem:[\neg(p \lor q) \equiv \neg p \land \neg q]
 
 [source, elixir]
 ----
-# Simplificando con las leyes de la naturaleza lógica
-# En vez de:
+# Primera Ley de De Morgan en acción:
+# En vez de negar la conjunción completa:
 not (user.is_admin and user.is_active)
+
 # Podemos expresar con la misma fuerza:
 not user.is_admin or not user.is_active
+
+# Segunda Ley de De Morgan:
+# En vez de:
+not (a or b)
+# Equivale a:
+not a and not b
+----
+
+=== Otras Tautologías Fundamentales
+
+[cols="2,3", options="header"]
+|===
+| Nombre | Expresión
+
+| **Identidad**
+| stem:[p \lor F \equiv p] ; stem:[p \land V \equiv p]
+
+| **Dominación**
+| stem:[p \lor V \equiv V] ; stem:[p \land F \equiv F]
+
+| **Doble Negación**
+| stem:[\neg(\neg p) \equiv p]
+
+| **Contraposición**
+| stem:[(p \to q) \equiv (\neg q \to \neg p)]
+
+| **Modus Ponens**
+| stem:[(p \land (p \to q)) \to q]
+|===
+
+[TIP]
+====
+La **contraposición** es una herramienta poderosa en la demostración de teoremas y en la lógica de los agentes: para probar que "si llueve, el suelo se moja", basta demostrar que "si el suelo no está mojado, no llovió".
+====
+
+== La Lógica como Fundamento del Agente
+
+Estas leyes no son abstracciones vacías. Cuando un agente racional evalúa su entorno y decide actuar, está ejecutando — en el fondo — cadenas de implicaciones lógicas sobre sus perceptos. El `case` de Elixir, con su pattern matching, es la encarnación computacional del _modus ponens_:
+
+[source, elixir]
+----
+# El pattern matching como razonamiento lógico:
+# "Si el percepto coincide con este patrón, entonces ejecuta esta acción"
+case percepto do
+  %{temperatura: t} when t > 100 -> :apagar_sistema       # p → q
+  %{bateria: b} when b < 10 -> :modo_ahorro               # r → s
+  _ -> :continuar_operacion                                # default
+end
 ----

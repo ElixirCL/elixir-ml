@@ -72,6 +72,18 @@ sudo apt install elixir
 sudo dnf install elixir
 ----
 
+[TIP]
+====
+**Gestión de versiones:** Si trabajas en múltiples proyectos con distintas versiones de Elixir/Erlang, herramientas como https://asdf-vm.com/[asdf] o https://mise.jdx.dev/[mise] te permiten instalar y cambiar entre versiones fácilmente. Son la opción preferida en entornos profesionales.
+
+[source, bash]
+----
+# Con mise (recomendado):
+mise install elixir@1.18
+mise install erlang@27
+----
+====
+
 == Verificar instalación
 
 [source, bash]

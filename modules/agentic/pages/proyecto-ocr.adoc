@@ -1,0 +1,131 @@
+= Proyecto: Script de OCR
+:icons: font
+
+En este proyecto práctico, implementamos un módulo funcional que demuestra el uso de Tesseract en Elixir. El código se encuentra en el directorio `apps/ocr_demo`.
+
+== Estructura del Proyecto
+
+[source, text]
+----
+apps/ocr_demo/
+├── lib/
+│   └── ocr_demo.ex       # Módulo principal
+├── mix.exs                # Configuración de dependencias
+├── test/
+│   └── ocr_demo_test.exs
+└── README.md
+----
+
+== Configuración (`mix.exs`)
+
+El proyecto sigue la estructura estándar de Mix y utiliza la librería `tesserax` como puente hacia el motor de Tesseract:
+
+[source, elixir]
+----
+defmodule OcrDemo.MixProject do
+  use Mix.Project
+
+  def project do
+    [
+      app: :ocr_demo,
+      version: "0.1.0",
+      elixir: "~> 1.18",
+      start_permanent: Mix.env() == :prod,
+      deps: deps()
+    ]
+  end
+
+  def application do
+    [extra_applications: [:logger]]
+  end
+
+  defp deps do
+    [
+      {:tesserax, "~> 0.4.0"}
+    ]
+  end
+end
+----
+
+== Código Fuente
+
+El núcleo del script se encuentra en `lib/ocr_demo.ex`:
+
+[source, elixir]
+----
+defmodule OcrDemo do
+  @moduledoc """
+  Módulo de demostración para OCR usando Tesseract.
+  Actúa como el 'sensor visual' de un agente.
+  """
+
+  @doc """
+  Procesa una imagen y extrae el texto contenido.
+  Retorna el texto limpio o un mensaje de error.
+
+  ## Ejemplos
+
+      iex> OcrDemo.process_image("test/fixtures/hello.png")
+      "Hello World"
+  """
+  def process_image(path, opts \\ []) do
+    language = Keyword.get(opts, :language, "eng")
+
+    case Tesserax.read(path, language: language) do
+      {:ok, text} -> String.trim(text)
+      {:error, reason} -> "Error al procesar: #{inspect(reason)}"
+    end
+  end
+
+  @doc """
+  Procesa múltiples imágenes en lote.
+  Retorna una lista de tuplas {archivo, texto}.
+  """
+  def process_batch(paths, opts \\ []) do
+    paths
+    |> Task.async_stream(fn path ->
+      {path, process_image(path, opts)}
+    end, max_concurrency: System.schedulers_online())
+    |> Enum.map(fn {:ok, result} -> result end)
+  end
+end
+----
+
+== Ejecución
+
+Para probar el script localmente, puedes usar la consola interactiva `iex`:
+
+[source, bash]
+----
+cd apps/ocr_demo
+mix deps.get
+iex -S mix
+----
+
+Dentro de la consola:
+
+[source, elixir]
+----
+# Procesar una imagen en inglés
+OcrDemo.process_image("ruta/a/tu/imagen.jpg")
+
+# Procesar en español
+OcrDemo.process_image("documento.png", language: "spa")
+
+# Procesar un lote de imágenes en paralelo
+OcrDemo.process_batch(["img1.png", "img2.png", "img3.png"])
+----
+
+[IMPORTANT]
+====
+Recuerda que Tesseract debe estar instalado en tu sistema para que este script funcione correctamente. Consulta la página xref:ocr.adoc[OCR en Elixir] para las instrucciones de instalación.
+====
+
+== Posibles Mejoras
+
+Este proyecto es un punto de partida minimalista. Algunas extensiones que lo acercarían a un sistema de percepción real para un agente:
+
+* **Preprocesamiento con Evision:** Aplicar binarización y eliminación de ruido antes del OCR para mejorar la precisión.
+* **Multi-idioma automático:** Detectar el idioma del documento antes de procesarlo.
+* **Integración con GenServer:** Convertir el módulo en un proceso persistente que acepte imágenes como mensajes y responda con el texto extraído.
+* **Pipeline completo:** Conectar la salida del OCR con un LLM para interpretar, resumir o traducir el texto extraído.

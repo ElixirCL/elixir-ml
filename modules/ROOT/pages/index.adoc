@@ -1,2 +1,72 @@
 = Elixir ML & LLM
+:icons: font
 
+Bienvenido al libro abierto de **Machine Learning** y **Modelos de Lenguaje de Gran Escala (LLMs)** con el lenguaje de programación **Elixir**.
+
+Este proyecto nace de la comunidad https://elixircl.github.io[Elixir Chile] con un propósito claro: construir un puente entre la teoría matemática que sustenta la inteligencia artificial y su implementación práctica en un ecosistema diseñado para la concurrencia, la tolerancia a fallos y la escalabilidad.
+
+[NOTE]
+====
+Este libro es un recurso vivo y en constante evolución. Cada capítulo combina los fundamentos teóricos con ejemplos idiomáticos en Elixir usando librerías como **Nx**, **Scholar**, **Axon** y **Bumblebee**.
+====
+
+== ¿Para quién es este libro?
+
+* Desarrolladores que conocen Elixir y quieren explorar el campo del ML/IA.
+* Estudiantes de ciencias de la computación, matemáticas o estadística que buscan una perspectiva funcional y concurrente.
+* Profesionales que desean entender los fundamentos teóricos detrás de las herramientas de IA que usan a diario.
+
+== Estructura del Libro
+
+El libro se organiza en dos grandes ejes temáticos:
+
+=== icon:robot[] Programación Agéntica
+
+El primer módulo explora el paradigma de los **agentes inteligentes**: qué son, cómo se diseñan, y cómo las herramientas modernas de IA nos permiten construir software que percibe, decide y actúa de forma autónoma.
+
+* **¿Qué es un agente?** — Definiciones, racionalidad y aprendizaje.
+* **PEAS** — El marco para describir la misión de un agente.
+* **Configuración del entorno** — VSCode, OpenCode y herramientas de IA.
+* **Sensores y percepción** — OCR como ejemplo de percepción visual.
+
+=== icon:square-root-alt[] Apéndice Matemático
+
+El segundo módulo proporciona las **bases matemáticas** necesarias para comprender los algoritmos de ML en profundidad:
+
+* **Lógica Proposicional** — Los cimientos del razonamiento formal.
+* **Álgebra Lineal** — Tensores, matrices y transformaciones con Nx.
+* **Estadística Descriptiva** — Medidas de tendencia, dispersión y correlación.
+* **Modelos Probabilísticos** — Distribuciones discretas y continuas.
+* **Inferencia Estadística** — Tests de hipótesis y p-valores.
+
+== El Ecosistema Elixir para ML
+
+Elixir cuenta con un ecosistema maduro para el cómputo numérico y el aprendizaje automático:
+
+[cols="1,3", options="header"]
+|===
+| Librería | Propósito
+
+| https://hexdocs.pm/nx[**Nx**]
+| Computación numérica con tensores. El equivalente a NumPy en el mundo Elixir.
+
+| https://hexdocs.pm/scholar[**Scholar**]
+| Algoritmos clásicos de ML: regresión, clustering, preprocesamiento.
+
+| https://hexdocs.pm/axon[**Axon**]
+| Redes neuronales y deep learning con diferenciación automática.
+
+| https://hexdocs.pm/bumblebee[**Bumblebee**]
+| Modelos pre-entrenados (GPT, BERT, Whisper, etc.) listos para usar.
+
+| https://hexdocs.pm/exla[**EXLA**]
+| Backend de compilación que acelera Nx usando XLA (CPU/GPU/TPU).
+
+| https://livebook.dev/[**Livebook**]
+| Notebooks interactivos para Elixir, similar a Jupyter.
+|===
+
+[TIP]
+====
+Si es tu primera vez con Elixir, te recomendamos comenzar por el capítulo xref:agentic:instalar-elixir-vscode.adoc[Configurar VSCode con Elixir y OpenCode] para dejar listo tu entorno de desarrollo.
+====

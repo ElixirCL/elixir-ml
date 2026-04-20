@@ -2,7 +2,10 @@
 :icons: font
 :stem: mathjax
 
-Advertencia: El siguiente documento sacrifica rigurosidad matematica para hacer mas accesible su contenido. 
+[NOTE]
+====
+El siguiente documento sacrifica rigurosidad matemática para hacer más accesible su contenido. El objetivo es construir la intuición necesaria para comprender las operaciones que subyacen en todo modelo de Machine Learning.
+====
 
 Un sistema de stem:[n] ecuaciones lineales con stem:[m] incógnitas stem:[x_1, \dots, x_m] se expresa formalmente como:
 
@@ -41,15 +44,17 @@ a = Nx.tensor([[2, 1], [1, 3]])
 b = Nx.tensor([15, 20])
 ----
 
-Son permitidas tres tipos de operaciones para transformar un sistema a otro, sin modificar el conjunto solucion:
+== Operaciones Elementales
 
-i. Multiplicamos una ecuacion por un numero real.
-ii. Multiplicamos una ecuacion por un numero real Y lo sumamos a otra ecuacion.
-iii. Intercambiamos la posicion de dos ecuaciones.
+Están permitidas tres tipos de operaciones para transformar un sistema a otro, sin modificar el conjunto solución:
 
-Dos sistemas de ecuaciones lineales con m incognitas son equivalentes si comparten un conjunto solucion.
+i. Multiplicar una ecuación por un número real distinto de cero.
+ii. Multiplicar una ecuación por un número real y sumarla a otra ecuación.
+iii. Intercambiar la posición de dos ecuaciones.
 
-Para visualizar esto, piensa en el sistema anterior. Si multiplicamos la primera ecuación por 2, obtenemos $4x_1 + 2x_2 = 30$. Aunque los números "se vean" distintos, la recta que representan en el espacio es exactamente la misma. No hemos perdido ni ganado información, solo hemos cambiado la escala de nuestra observación.
+Dos sistemas de ecuaciones lineales con stem:[m] incógnitas son equivalentes si comparten un conjunto solución.
+
+Para visualizar esto, piensa en el sistema anterior. Si multiplicamos la primera ecuación por 2, obtenemos stem:[4x_1 + 2x_2 = 30]. Aunque los números "se vean" distintos, la recta que representan en el espacio es exactamente la misma. No hemos perdido ni ganado información, solo hemos cambiado la escala de nuestra observación.
 
 [source, elixir]
 ----
@@ -58,6 +63,8 @@ Para visualizar esto, piensa en el sistema anterior. Si multiplicamos la primera
 fila_1 = a[0]
 fila_1_escalada = Nx.multiply(fila_1, 2)
 ----
+
+== La Matriz: Arquitectura del Sistema
 
 Esta arquitectura de coeficientes no es una simple lista; es una entidad rectangular que encapsula la transformación completa:
 
@@ -103,9 +110,11 @@ matrix = Nx.tensor([
 ])
 ----
 
-Una matriz A como esta se dice que es una matriz n x m.
+Una matriz stem:[\mathbf{A}] como esta se dice que es una **matriz stem:[n \times m]**, donde stem:[n] es el número de filas y stem:[m] el número de columnas.
 
-Para resolver un sistema como $Ax = b$, no necesitamos hacer cuentas a mano eternamente. Podemos usar la **Eliminación de Gauss** (llevar la matriz a su forma escalonada) o simplemente dejar que **Nx** haga el trabajo pesado:
+== Resolución de Sistemas
+
+Para resolver un sistema como stem:[\mathbf{A}\mathbf{x} = \mathbf{b}], no necesitamos hacer cuentas a mano eternamente. Podemos usar la **Eliminación de Gauss** (llevar la matriz a su forma escalonada) o simplemente dejar que **Nx** haga el trabajo pesado:
 
 [source, elixir]
 ----
@@ -114,6 +123,7 @@ Para resolver un sistema como $Ax = b$, no necesitamos hacer cuentas a mano eter
 solucion = Nx.LinAlg.solve(a, b)
 ----
 
+== Rango de una Matriz
 
 El rango de una matriz es el número de filas (o columnas) que son **linealmente independientes**. Es, de alguna forma, la medida de la "información real" que contiene la matriz. Si una fila se puede obtener sumando las otras, esa fila es redundante y no aumenta el rango.
 
@@ -125,8 +135,11 @@ En computación, solemos estimar el rango observando los valores singulares (SVD
 {u, s, vt} = Nx.LinAlg.svd(matrix)
 ----
 
+== Sistemas Inconsistentes
 
-No todos los caminos tienen destino. A veces, las ecuaciones se contradicen (como decir que $x=1$ y $x=2$ al mismo tiempo). Geométricamente, esto sucede cuando las rectas o planos son paralelos y nunca se cruzan. En estos casos, el sistema es **inconsistente**.
+No todos los caminos tienen destino. A veces, las ecuaciones se contradicen (como decir que stem:[x=1] y stem:[x=2] al mismo tiempo). Geométricamente, esto sucede cuando las rectas o planos son paralelos y nunca se cruzan. En estos casos, el sistema es **inconsistente**.
+
+== Transpuesta
 
 Es como girar la matriz sobre su diagonal principal. Las filas se convierten en columnas y viceversa. Es una operación fundamental para reorientar datos antes de un producto.
 
@@ -137,6 +150,8 @@ transpuesta = Nx.transpose(matrix)
 transpuesta = Nx.t(matrix)
 ----
 
+== Suma y Escalamiento
+
 Las matrices se pueden sumar (si tienen la misma forma) elemento a elemento. También se pueden multiplicar por un escalar, lo que "estira" o "encoge" toda la transformación.
 
 [source, elixir]
@@ -145,7 +160,9 @@ suma = Nx.add(matrix_a, matrix_b)
 escalado = Nx.multiply(matrix, 0.5)
 ----
 
-Multiplicar dos matrices ($A \cdot B$) no es multiplicar elemento a producto. Es una **composición de transformaciones**. El elemento en la posición $(i, j)$ es el producto punto de la fila $i$ de $A$ por la columna $j$ de $B$.
+== Multiplicación Matricial
+
+Multiplicar dos matrices (stem:[\mathbf{A} \cdot \mathbf{B}]) no es multiplicar elemento a elemento. Es una **composición de transformaciones**. El elemento en la posición stem:[(i, j)] es el producto punto de la fila stem:[i] de stem:[\mathbf{A}] por la columna stem:[j] de stem:[\mathbf{B}].
 
 [IMPORTANT]
 ====
@@ -157,7 +174,31 @@ El orden de los factores altera el producto: stem:[A \cdot B \neq B \cdot A]. En
 producto = Nx.dot(matrix_a, matrix_b)
 ----
 
+== Determinante
 
+El **determinante** de una matriz cuadrada es un escalar que codifica información geométrica fundamental: mide el factor de escala por el cual la transformación estira o comprime el espacio.
+
+[stem]
+++++
+\det(\mathbf{A}) = \sum_{\sigma \in S_n} \text{sgn}(\sigma) \prod_{i=1}^{n} a_{i,\sigma(i)}
+++++
+
+Para una matriz stem:[2 \times 2]:
+
+[stem]
+++++
+\det\begin{pmatrix} a & b \\ c & d \end{pmatrix} = ad - bc
+++++
+
+* Si stem:[\det(\mathbf{A}) = 0]: la transformación **colapsa** una dimensión. La matriz no tiene inversa y el sistema es singular.
+* Si stem:[\det(\mathbf{A}) \neq 0]: la transformación es invertible y el sistema tiene solución única.
+
+[source, elixir]
+----
+det = Nx.LinAlg.determinant(matrix)
+----
+
+== Linealidad
 
 En matemáticas, la linealidad es una propiedad que garantiza que un sistema sea predecible y fácil de analizar. Se apoya en dos pilares fundamentales:
 
@@ -212,7 +253,7 @@ En computación y ciencia de datos, el rango de un tensor se suele llamar su nú
 
 == Espacios, Kernel e Imagen
 
-Dada una matriz $A$, esta define dos subespacios fundamentales:
+Dada una matriz stem:[\mathbf{A}], esta define dos subespacios fundamentales:
 
 - **Imagen o Espacio Columna** (stem:[\text{Im}(\mathbf{A})]): El conjunto de todos los vectores que pueden ser alcanzados por la transformación stem:[\mathbf{A}\mathbf{x}]. Su dimensión es el **rango** de la matriz.
 - **Kernel o Espacio Nulo** (stem:[\text{Ker}(\mathbf{A})]): El conjunto de vectores stem:[\mathbf{x}] que la matriz "colapsa" hacia el origen (stem:[\mathbf{A}\mathbf{x} = \mathbf{0}]).
@@ -220,6 +261,42 @@ Dada una matriz $A$, esta define dos subespacios fundamentales:
 [TIP]
 ====
 Si el Kernel contiene vectores distintos de cero, la transformación no es inyectiva; es decir, hay pérdida de información irreversible.
+====
+
+== Valores y Vectores Propios (Eigenvalues y Eigenvectors)
+
+Entre todas las direcciones del espacio, existen algunas privilegiadas: aquellas que una transformación lineal no desvía, sino que solo estira o comprime. Si un vector stem:[\mathbf{v}] cumple:
+
+[stem]
+++++
+\mathbf{A}\mathbf{v} = \lambda \mathbf{v}
+++++
+
+entonces stem:[\mathbf{v}] es un **vector propio** (eigenvector) de stem:[\mathbf{A}], y stem:[\lambda] es su **valor propio** (eigenvalue) asociado.
+
+=== ¿Por qué importan?
+
+Los eigenvalues y eigenvectors revelan la estructura interna de una transformación:
+
+* **PCA (Análisis de Componentes Principales):** Los eigenvectors de la matriz de covarianza son las direcciones de máxima varianza en los datos. Los eigenvalues nos dicen cuánta varianza captura cada dirección.
+* **Estabilidad de sistemas:** En sistemas dinámicos y redes recurrentes, los eigenvalues determinan si el sistema converge, diverge o oscila.
+* **PageRank:** El algoritmo fundacional de Google calcula el eigenvector dominante de la matriz de transiciones de la web.
+
+=== Cálculo en Elixir
+
+[source, elixir]
+----
+# Descomposición en eigenvalues/eigenvectors
+matrix = Nx.tensor([[4.0, 2.0], [1.0, 3.0]])
+{eigenvalues, eigenvectors} = Nx.LinAlg.eigh(matrix)
+
+# eigenvalues: los factores de escala en cada dirección propia
+# eigenvectors: las direcciones que la transformación no desvía
+----
+
+[IMPORTANT]
+====
+`Nx.LinAlg.eigh/1` calcula eigenvalues para matrices **simétricas** (Hermitianas), que es el caso más común en ML (matrices de covarianza, kernels, etc.). Para matrices generales, se usaría una descomposición más elaborada.
 ====
 
 == Broadcasting (Difusión de Tensores)
@@ -237,7 +314,7 @@ Tensor B (Shape:     4)
 -----------------------
 A + B (Resultado: 3 x 4)
 ----
-*Explicación*: La dimensión de $B$ se "difunde" virtualmente a lo largo de las filas de $A$ para que la operación sea posible.
+*Explicación*: La dimensión de stem:[\mathbf{B}] se "difunde" virtualmente a lo largo de las filas de stem:[\mathbf{A}] para que la operación sea posible.
 
 == Cálculo de Matrices: Gradientes y Jacobianos
 
@@ -318,11 +395,12 @@ Como hemos visto, **Nx** funciona como un lenguaje para describir transformacion
 | Producto Exterior | `Nx.outer/2`
 | Inversa de Matriz | `Nx.LinAlg.invert/1`
 
-.4+| **Análisis y Geometría** 
-| Resolución ($Ax = b$) | `Nx.LinAlg.solve/2`
+.5+| **Análisis y Geometría** 
+| Resolución (stem:[\mathbf{Ax} = \mathbf{b}]) | `Nx.LinAlg.solve/2`
 | Norma (Magnitud) | `Nx.LinAlg.norm/2`
 | Determinante | `Nx.LinAlg.determinant/1`
 | Rango e Información | `Nx.LinAlg.svd/1`
+| Eigenvalues / Eigenvectors | `Nx.LinAlg.eigh/1`
 
 .4+| **Cálculo Avanzado** 
 | Gradientes (stem:[\nabla]) | `Nx.grad/1`
