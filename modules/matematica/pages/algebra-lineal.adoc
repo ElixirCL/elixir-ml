@@ -83,7 +83,7 @@ Esta estructura rectangular representa una entidad propia, mucho más allá de s
 
 [stem]
 --
-A = \begin{pmatrix}
+\mathbf{A} = \begin{pmatrix}
 a_{11} & a_{12} & \dots & a_{1m} \\
 a_{21} & a_{22} & \dots & a_{2m} \\
 \vdots & \vdots & \ddots & \vdots \\

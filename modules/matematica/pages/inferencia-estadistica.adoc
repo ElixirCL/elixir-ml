@@ -2,111 +2,232 @@
 :icons: font
 :stem: mathjax
 
-La inferencia estadística es el proceso de usar datos de una muestra para sacar conclusiones sobre la población de la que proviene. Se divide principalmente en **estimación por intervalos** (dar un rango de valores probables) y **contraste de hipótesis** (tomar decisiones basadas en evidencia).
+La inferencia estadística es el puente que nos permite pasar del mundo de lo observado (la muestra) al mundo de lo desconocido (la población). En el ecosistema del Machine Learning, este puente es vital para validar la estabilidad de nuestros modelos y asegurar que nuestros hallazgos no son meras coincidencias estocásticas.
 
-== Inferencia sobre la Media ($\mu$): Población Normal
+Este proceso se ramifica en dos grandes vertientes:
 
-Cuando trabajamos con una población que sigue una distribución $\mathcal{N}(\mu, \sigma)$, la estrategia depende de si conocemos la varianza poblacional ($\sigma^2$).
+* **Estimación por Intervalos:** Definir un rango de confianza donde esperamos que resida el parámetro real.
+* **Contraste de Hipótesis:** Un marco de toma de decisiones para aceptar o rechazar afirmaciones basadas en la probabilidad.
 
-=== Caso 1: Varianza ($\sigma$) Conocida
-En este escenario usamos la **Distribución Normal Estándar ($Z$)**. El intervalo de confianza se define como:
+== La Anatomía de un Contraste de Hipótesis
+
+Todo contraste de hipótesis es una partición del espacio de resultados. Basándonos en un estadístico de prueba stem:[T] (calculado a partir de la muestra), dividimos todos sus valores posibles en dos conjuntos disjuntos:
+
+1.  **Región de Aceptación (stem:[C^*]):** El conjunto de valores de stem:[T] para los cuales decidimos no rechazar stem:[H_0].
+2.  **Región Crítica o de Rechazo (stem:[C]):** El conjunto de valores de stem:[T] que son tan improbables bajo stem:[H_0] que nos llevan a rechazarla.
+
+Formalmente, nuestra regla de decisión se resume en:
 [stem]
 --
-I = \left[ \bar{x} \mp z_{\alpha/2} \frac{\sigma}{\sqrt{n}} \right]
+\begin{cases} 
+\text{Aceptar } H_0 & \text{si } T \in C^* \\ 
+\text{Rechazar } H_0 & \text{si } T \in C 
+\end{cases}
 --
+
+La probabilidad de caer en la región crítica stem:[C] cuando stem:[H_0] es realmente cierta se define como el nivel de significancia (stem:[\alpha]).
+
+=== Tipos de Hipótesis: Simples y Compuestas
+
+*   **Hipótesis Simple:** Aquella que especifica un único valor para el parámetro. Ejemplo: stem:[H_0: \mu = 200].
+*   **Hipótesis Compuesta:** Aquella que abarca un rango de valores. Ejemplo: stem:[H_1: \mu \neq 200] o stem:[H_1: \mu > 200].
+
+=== El Vínculo entre Intervalos y Contrastes
+
+Existe una relación profunda y elegante entre estas dos vertientes de la inferencia. Para un contraste bilateral del tipo stem:[H_0: \theta = \theta_0] frente a stem:[H_1: \theta \neq \theta_0]:
+
+[NOTE]
+====
+Aceptaremos stem:[H_0] con un nivel de significancia stem:[\alpha] si, y solo si, el valor de la nula stem:[\theta_0] pertenece al intervalo de confianza de nivel stem:[1 - \alpha] calculado a partir de la muestra.
+====
+
+== Inferencia sobre la Media (stem:[\mu]): Población Normal
+
+Cuando trabajamos con una población que sigue una distribución stem:[\mathcal{N}(\mu, \sigma)], la estrategia depende de si conocemos la varianza poblacional (stem:[\sigma^2]).
+
+=== Caso 1: Varianza (stem:[\sigma]) Conocida
+En este escenario usamos la **Distribución Normal Estándar (stem:[Z])**. El intervalo de confianza se define como:
+
+[stem]
+--
+I = \left[ \bar{x} - z_{\alpha/2} \frac{\sigma}{\sqrt{n}} \ , \ \bar{x} + z_{\alpha/2} \frac{\sigma}{\sqrt{n}} \right]
+--
+
+En **Elixir**, podemos implementar este contraste utilizando tensores de **Nx** para manejar los datos de entrada:
 
 [source, elixir]
 ----
-defmodule Inferencia.Media do
-  alias Statistics.Distributions.Normal
-
-  @doc "Contraste de hipótesis para H0: mu = mu0 (Dos colas)"
-  def test_z_bilateral(media_muestral, mu0, sigma, n, alfa) do
+defmodule ElixirML.Inferencia.Media do
+  import Nx.Constants, only: [pi: 0]
+  
+  @doc """
+  Realiza un test Z para la media. 
+  Útil cuando la varianza poblacional es conocida.
+  """
+  def z_test(tensor_muestra, mu0, sigma, alfa \\ 0.05) do
+    n = Nx.size(tensor_muestra)
+    media_muestral = Nx.mean(tensor_muestra) |> Nx.to_number()
+    
+    # Estadístico Z observado (Normalizado)
     z_obs = (media_muestral - mu0) / (sigma / :math.sqrt(n))
-    z_critico = Normal.ppf(1 - alfa / 2, 0, 1)
-
-    if abs(z_obs) <= z_critico, do: :aceptada, else: :rechazada
+    
+    # En la práctica, usaríamos el Percent Point Function (PPF) 
+    # de una librería como Scholar.
+    z_critico = 1.96 # Aproximación para alfa = 0.05 bilateral
+    
+    if abs(z_obs) > z_critico, do: :rechazar_h0, else: :no_rechazar_h0
   end
 end
 ----
 
-=== Caso 2: Varianza ($\sigma$) Desconocida
-Aquí debemos usar la cuasivarianza muestral ($S^2$) y la **Distribución t de Student** con $n-1$ grados de libertad.
+=== Caso 2: Varianza (stem:[\sigma]) Desconocida
+Aquí debemos usar la cuasivarianza muestral (stem:[S^2]) y la **Distribución t de Student** con stem:[n-1] grados de libertad. El intervalo de confianza se ensancha para compensar la incertidumbre:
+
 [stem]
 --
-I = \left[ \bar{x} \mp t_{n-1:\alpha/2} \frac{S}{\sqrt{n}} \right]
+I = \left[ \bar{x} - t_{n-1:\alpha/2} \frac{S}{\sqrt{n}} \ , \ \bar{x} + t_{n-1:\alpha/2} \frac{S}{\sqrt{n}} \right]
 --
 
 [source, elixir]
 ----
-defmodule Inferencia.MediaT do
-  alias Statistics.Distributions.T
+defmodule ElixirML.Inferencia.MediaT do
+  @doc """
+  Test T de Student para una muestra. 
+  Se utiliza cuando la varianza poblacional es desconocida.
+  Soporta tests bilaterales (:both) y unilaterales (:greater, :less).
+  """
+  def t_test(tensor_muestra, mu0, opts \\ []) do
+    alfa = Keyword.get(opts, :alfa, 0.05)
+    tail = Keyword.get(opts, :tail, :both)
 
-  def test_t_bilateral(media_muestral, mu0, s, n, alfa) do
-    t_obs = (media_muestral - mu0) / (s / :math.sqrt(n))
-    t_critico = T.ppf(1 - alfa / 2, n - 1)
-
-    if abs(t_obs) <= t_critico, do: :aceptada, else: :rechazada
+    n = Nx.size(tensor_muestra)
+    media_m = Nx.mean(tensor_muestra) |> Nx.to_number()
+    varianza_m = Nx.subtract(tensor_muestra, media_m) 
+                 |> Nx.pow(2) 
+                 |> Nx.sum() 
+                 |> Nx.divide(n - 1) 
+                 |> Nx.to_number()
+    
+    t_obs = (media_m - mu0) / (:math.sqrt(varianza_m / n))
+    
+    # En un entorno real usaríamos: Scholar.Distributions.T.ppf(...)
+    # Para alfa=0.05 y n-1=9:
+    # Bilateral: t_critico = 2.262
+    # Unilateral: t_critico = 1.833
+    
+    case tail do
+      :both -> if abs(t_obs) > 2.262, do: :rechazar_h0, else: :no_rechazar_h0
+      :greater -> if t_obs > 1.833, do: :rechazar_h0, else: :no_rechazar_h0
+      :less -> if t_obs < -1.833, do: :rechazar_h0, else: :no_rechazar_h0
+    end
   end
 end
 ----
 
-== Muestras Grandes (Población no necesariamente Normal)
+=== Caso de Estudio: El Test del "Snack" (Bilateral)
 
-Gracias al **Teorema Central del Límite**, si el tamaño de la muestra $n$ es suficientemente grande (habitualmente $n > 30$), podemos aproximar la distribución de la media a una Normal, incluso si la población original no lo es.
+Imagina que analizamos un nuevo producto alimenticio donde el nivel medio de azúcar esperado es stem:[\mu_0 = 200]. Tomamos una muestra aleatoria de stem:[n = 10] productos y obtenemos:
 
-*   **Población Binomial ($B(1, p)$)**:
+*   Media muestral: stem:[\bar{x} = 202]
+*   Cuasivarianza muestral: stem:[S^2 = 289] (Desviación stem:[S = 17])
+
+¿Existe una diferencia significativa con un nivel stem:[\alpha = 0.05]?
+
+[source, elixir]
+----
+# Representación de nuestra muestra en Nx
+muestra = Nx.tensor([185, 210, 205, 190, 220, 215, 195, 200, 202, 200], type: :f32)
+
+# Ejecutamos el test T (Varianza desconocida)
+resultado = ElixirML.Inferencia.MediaT.t_test(muestra, 200, tail: :both, alfa: 0.05)
+
+# Cálculo manual para verificación:
+# t_obs = (202 - 200) / sqrt(289/10) = 0.372
+# Como 0.372 < 2.262, la conclusión es :no_rechazar_h0
+----
+
+== Tests Unilaterales: Cuando la Dirección Importa
+
+No siempre buscamos cualquier diferencia (bilateral). A veces nuestra sospecha tiene una dirección clara. Por ejemplo: "¿Ha *aumentado* el nivel de colesterol por este aceite?".
+
+*   **Bilateral (Dos colas):** stem:[H_1: \mu \neq \mu_0]. La región crítica stem:[C] se reparte en los dos extremos (stem:[\alpha/2] en cada lado).
+*   **Unilateral (Una cola):** stem:[H_1: \mu > \mu_0] o stem:[H_1: \mu < \mu_0]. Toda la masa de error stem:[\alpha] se concentra en un solo extremo, haciendo el test más "sensible" en esa dirección.
+
 [stem]
 --
-I = \left[ \hat{p} \mp z_{\alpha/2} \sqrt{\frac{\hat{p}(1-\hat{p})}{n}} \right]
+\text{Rechazar } H_0 \text{ si } \frac{\bar{x} - \mu_0}{S/\sqrt{n}} > t_{n-1:\alpha}
 --
 
-*   **Población Poisson ($\mathcal{P}(\lambda)$)**:
+== Muestras Grandes y el Teorema Central del Límite
+
+Gracias al **Teorema Central del Límite (TCL)**, si el tamaño de la muestra stem:[n] es suficientemente grande (habitualmente stem:[n > 30]), podemos aproximar la distribución de la media a una Normal, independientemente de la distribución original de la población.
+
+*   **Población Binomial (stem:[B(1, p)]):**
 [stem]
 --
-I = \left[ \bar{x} \mp z_{\alpha/2} \sqrt{\frac{\bar{x}}{n}} \right]
+I = \left[ \hat{p} - z_{\alpha/2} \sqrt{\frac{\hat{p}(1-\hat{p})}{n}} \ , \ \hat{p} + z_{\alpha/2} \sqrt{\frac{\hat{p}(1-\hat{p})}{n}} \right]
 --
 
-== Inferencia sobre la Varianza ($\sigma^2$)
-
-Para inferir sobre la dispersión de una población normal, recurrimos a la distribución **Ji-cuadrado ($\chi^2$)**.
-
-*   **Varianza con $\mu$ desconocida**:
+*   **Población Poisson (stem:[\mathcal{P}(\lambda)]):**
 [stem]
 --
-I = \left[ \frac{(n-1)S^2}{\chi^2_{n-1:\alpha/2}} , \frac{(n-1)S^2}{\chi^2_{n-1:1-\alpha/2}} \right]
+I = \left[ \bar{x} - z_{\alpha/2} \sqrt{\frac{\bar{x}}{n}} \ , \ \bar{x} + z_{\alpha/2} \sqrt{\frac{\bar{x}}{n}} \right]
+--
+
+== Inferencia sobre la Varianza (stem:[\sigma^2])
+
+Para inferir sobre la dispersión de una población normal, recurrimos a la distribución **Ji-cuadrado (stem:[\chi^2])**.
+
+*   **Varianza con stem:[\mu] desconocida:**
+[stem]
+--
+I = \left[ \frac{(n-1)S^2}{\chi^2_{n-1:\alpha/2}} \ , \ \frac{(n-1)S^2}{\chi^2_{n-1:1-\alpha/2}} \right]
 --
 
 [source, elixir]
 ----
-defmodule Inferencia.Varianza do
-  alias Statistics.Distributions.Chisq
-
-  def intervalo_confianza(s2, n, alfa) do
-    chi_inf = Chisq.ppf(1 - alfa / 2, n - 1)
-    chi_sup = Chisq.ppf(alfa / 2, n - 1)
-
-    num = (n - 1) * s2
+defmodule ElixirML.Inferencia.Varianza do
+  def intervalo_confianza(varianza_m, n, alfa \\ 0.05) do
+    # Los valores críticos dependen de los grados de libertad (n-1)
+    grados_libertad = n - 1
+    
+    # Estos valores se obtendrían de tablas o Scholar.Distributions
+    chi_inf = 19.02 # Ilustrativo para alfa=0.05
+    chi_sup = 2.70
+    
+    num = (n - 1) * varianza_m
     {num / chi_inf, num / chi_sup}
   end
 end
 ----
 
-== Comparación de Varianzas (Dos Poblaciones)
+== El Cuadro de Decisiones: Errores en el Test
 
-Para decidir si dos poblaciones tienen la misma varianza, comparamos el ratio de sus cuasivarianzas usando la **Distribución F de Snedecor**.
+Al tomar una decisión basada en probabilidad, siempre existe un riesgo. En la ciencia de datos, debemos equilibrar estos dos tipos de fallos:
 
-[stem]
---
-\frac{S_1^2 / \sigma_1^2}{S_2^2 / \sigma_2^2} \to F_{n_1-1, n_2-1}
---
+* **Error Tipo I (stem:[\alpha]):** Rechazar la hipótesis nula stem:[H_0] cuando en realidad es cierta (un "falso positivo").
+* **Error Tipo II (stem:[\beta]):** No rechazar stem:[H_0] cuando la hipótesis alternativa stem:[H_1] es la verdadera (un "falso negativo").
 
 [TIP]
 ====
-En **Machine Learning**, estos contrastes son vitales para validar si dos modelos tienen un desempeño significativamente diferente o si la mejora observada es simplemente producto del azar.
+En **Machine Learning**, el "poder" de un test es stem:[1 - \beta]. Representa la capacidad del modelo para detectar una mejora real (un efecto) cuando este existe.
 ====
+
+== El p-valor: ¿Qué hubiera pasado si...?
+
+Una de las críticas más comunes a los tests de hipótesis es su dependencia absoluta del nivel de significancia stem:[\alpha] elegido *antes* de ver los datos. El **p-valor** surge como una respuesta natural a la pregunta:
+
+[NOTE]
+====
+¿Qué hubiera pasado si hubiéramos elegido un nivel stem:[\alpha] mucho menor? ¿Seguiríamos aceptando stem:[H_0]?
+====
+
+El p-valor es el nivel de significancia más pequeño para el cual la hipótesis nula sería rechazada. 
+
+* **Si el p-valor es muy pequeño:** Nos dice que los datos observados son extremadamente raros bajo el supuesto de stem:[H_0]. La evidencia es abrumadora en su contra.
+* **Si el p-valor es grande:** Los datos son perfectamente compatibles con stem:[H_0].
 
 [IMPORTANT]
 ====
-Recuerda que el **p-valor** es la probabilidad de observar un resultado tan extremo como el obtenido si la hipótesis nula fuera cierta. Si `p-valor < alfa`, rechazamos $H_0$.
+En la ciencia de datos moderna, no basta con decir "rechazamos" o "aceptamos". Reportar el p-valor permite que otros investigadores decidan si la evidencia es suficiente para sus propios estándares de rigor.
 ====

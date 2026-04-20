@@ -1,11 +1,3 @@
-Para diseñar un agente inteligente con éxito, el primer paso fundamental es especificar su entorno de tarea de la manera más completa posible
-. En la literatura técnica, este proceso se formaliza mediante el modelo PEAS, un acrónimo que agrupa los cuatro elementos críticos que definen el problema que el agente debe resolver: la medida de Rendimiento (Performance), el Entorno (Environment), los Actuadores (Actuators) y los Sensores (Sensors)
-.
-A continuación, se detalla cada componente utilizando el ejemplo clásico de un taxista autónomo para ilustrar su aplicación práctica:
-1. Rendimiento (Performance)
-La medida de rendimiento constituye el criterio de éxito del agente; es la norma según la cual se evalúa su comportamiento
-. Es vital diseñar esta medida en función de lo que se desea alcanzar en el entorno y no de cómo se espera que el agente se comporte
-.
 = La Anatomía del Deber: El Marco PEAS
 :icons: font
 
