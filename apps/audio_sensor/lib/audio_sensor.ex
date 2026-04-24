@@ -9,13 +9,12 @@ defmodule AudioSensor do
     {:ok, tokenizer} = Bumblebee.load_tokenizer({:hf, modelo})
     {:ok, generation_config} = Bumblebee.load_generation_config({:hf, modelo})
 
-    Bumblebee.Audio.speech_to_text(
+    Bumblebee.Audio.speech_to_text_whisper(
       whisper,
       featurizer,
       tokenizer,
       generation_config,
       compile: [batch_size: 1]
-      # ELIMINADO para Windows: defn_options: [compiler: EXLA]
     )
   end
 

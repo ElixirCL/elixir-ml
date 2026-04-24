@@ -41,7 +41,8 @@ defmodule AudioSensor.MixProject do
     [
       {:bumblebee, "~> 0.6.0"},
       {:nx, "~> 0.9.0"},
-      {:exla, "~> 0.9.0"}
+      {:exla, "~> 0.9.0"},
+      {:castore, ">= 0.0.0"}
     ]
   end
 end
@@ -76,7 +77,7 @@ defmodule AudioSensor do
     {:ok, tokenizer} = Bumblebee.load_tokenizer({:hf, modelo})
     {:ok, generation_config} = Bumblebee.load_generation_config({:hf, modelo})
 
-    serving = Bumblebee.Audio.speech_to_text(
+    serving = Bumblebee.Audio.speech_to_text_whisper(
       whisper,
       featurizer,
       tokenizer,
@@ -165,9 +166,3 @@ end)
 * Para mayor precisión en español, cambia a `"openai/whisper-small"` en las opciones de `init/1`.
 ====
 
-== Posibles Mejoras
-
-* **Streaming en tiempo real:** Integrar con https://membrane.stream/[Membrane Framework] para procesar audio del micrófono en tiempo real.
-* **Detección de idioma:** Usar la capacidad de Whisper para detectar el idioma automáticamente antes de transcribir.
-* **Pipeline con LLM:** Conectar la salida de la transcripción con un LLM para generar resúmenes, traducir o responder preguntas sobre el contenido del audio.
-* **GenServer persistente:** Convertir el sensor en un proceso autónomo que acepta archivos como mensajes y emite transcripciones como eventos.

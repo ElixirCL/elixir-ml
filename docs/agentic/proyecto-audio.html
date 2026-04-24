@@ -234,7 +234,8 @@
     [
       {:bumblebee, "~&gt; 0.6.0"},
       {:nx, "~&gt; 0.9.0"},
-      {:exla, "~&gt; 0.9.0"}
+      {:exla, "~&gt; 0.9.0"},
+      {:castore, "&gt;= 0.0.0"}
     ]
   end
 end</code></pre>
@@ -272,7 +273,7 @@ end</code></pre>
     {:ok, tokenizer} = Bumblebee.load_tokenizer({:hf, modelo})
     {:ok, generation_config} = Bumblebee.load_generation_config({:hf, modelo})
 
-    serving = Bumblebee.Audio.speech_to_text(
+    serving = Bumblebee.Audio.speech_to_text_whisper(
       whisper,
       featurizer,
       tokenizer,
@@ -381,27 +382,6 @@ end)</code></pre>
 </td>
 </tr>
 </table>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="posibles-mejoras"><a class="anchor" href="#posibles-mejoras"></a>Posibles Mejoras</h2>
-<div class="sectionbody">
-<div class="ulist">
-<ul>
-<li>
-<p><strong>Streaming en tiempo real:</strong> Integrar con <a href="https://membrane.stream/">Membrane Framework</a> para procesar audio del micrófono en tiempo real.</p>
-</li>
-<li>
-<p><strong>Detección de idioma:</strong> Usar la capacidad de Whisper para detectar el idioma automáticamente antes de transcribir.</p>
-</li>
-<li>
-<p><strong>Pipeline con LLM:</strong> Conectar la salida de la transcripción con un LLM para generar resúmenes, traducir o responder preguntas sobre el contenido del audio.</p>
-</li>
-<li>
-<p><strong>GenServer persistente:</strong> Convertir el sensor en un proceso autónomo que acepta archivos como mensajes y emite transcripciones como eventos.</p>
-</li>
-</ul>
 </div>
 </div>
 </div>

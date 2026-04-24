@@ -19,7 +19,8 @@ defmodule AudioSensor.MixProject do
     [
       {:bumblebee, "~> 0.6.0"},
       {:nx, "~> 0.9.0"},
-      {:castore, ">= 0.0.0"}
+      {:castore, ">= 0.0.0"},
+      {:req, "~> 0.5.0"}
     ]
   end
 end

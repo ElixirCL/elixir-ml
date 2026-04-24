@@ -5,37 +5,44 @@ $ErrorActionPreference = "Stop"
 
 Write-Host "--- Iniciando proceso de publicación ---" -ForegroundColor Cyan
 
-# 1. Sincronización inicial
-Write-Host "[1/6] Sincronizando con los repositorios remotos..." -ForegroundColor Yellow
+# 1. Preparación inicial: Capturar cambios de contenido
+Write-Host "[1/7] Capturando cambios en el código fuente..." -ForegroundColor Yellow
+$fecha = Get-Date -Format "yyyy-MM-dd HH:mm"
+git add .
+git commit -m "site: actualización de contenido y manual [$fecha]"
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "No hay cambios nuevos en las fuentes." -ForegroundColor Gray
+}
+
+# 2. Sincronización
+Write-Host "[2/7] Sincronizando con los repositorios remotos (rebase)..." -ForegroundColor Yellow
 git pull --rebase fork main
 git pull --rebase origin main
 
-# 2. Limpieza
-Write-Host "[2/6] Limpiando carpeta docs/..." -ForegroundColor Yellow
+# 3. Limpieza
+Write-Host "[3/7] Limpiando carpeta docs/..." -ForegroundColor Yellow
 if (Test-Path "docs") {
     Remove-Item -Recurse -Force docs
 }
 
-# 3. Construcción del sitio
-Write-Host "[3/6] Generando sitio con Antora (esto puede tardar un poco)..." -ForegroundColor Yellow
+# 4. Construcción del sitio
+Write-Host "[4/7] Generando sitio con Antora (ahora verá los últimos cambios)..." -ForegroundColor Yellow
 npx antora antora-playbook.yml --stacktrace
 
-# 4. Evitar Jekyll en GitHub Pages
-Write-Host "[4/6] Configurando .nojekyll..." -ForegroundColor Yellow
+# 5. Evitar Jekyll en GitHub Pages
+Write-Host "[5/7] Configurando .nojekyll..." -ForegroundColor Yellow
 New-Item -Path "docs/.nojekyll" -ItemType File -Force | Out-Null
 
-# 5. Commit de cambios
-Write-Host "[5/6] Preparando commit..." -ForegroundColor Yellow
-$fecha = Get-Date -Format "yyyy-MM-dd HH:mm"
-git add .
-try {
-    git commit -m "site: rebuild manual de la web [$fecha]"
-} catch {
-    Write-Host "No hay cambios nuevos que commitear." -ForegroundColor Gray
+# 6. Consolidar cambios del sitio generado
+Write-Host "[6/7] Consolidando archivos generados en el commit..." -ForegroundColor Yellow
+git add docs/
+git commit --amend --no-edit
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "No hubo cambios en la carpeta docs." -ForegroundColor Gray
 }
 
-# 6. Push
-Write-Host "[6/6] Subiendo cambios a GitHub..." -ForegroundColor Yellow
+# 7. Push
+Write-Host "[7/7] Subiendo cambios a GitHub..." -ForegroundColor Yellow
 git push fork main
 git push origin main
 

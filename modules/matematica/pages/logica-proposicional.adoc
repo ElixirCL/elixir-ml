@@ -43,12 +43,12 @@ not true   # => false
 not false  # => true
 ----
 
-=== Conjunción (stem:[\land])
+=== Conjunción (stem:[\wedge])
 Es nuestro "y" cotidiano. Solo brilla con la verdad cuando **ambas** partes que la componen son, por sí mismas, verdaderas.
 
 [cols="^1,^1,^2", options="header"]
 |===
-| stem:[p] | stem:[q] | stem:[p \land q]
+| stem:[p] | stem:[q] | stem:[p \wedge q]
 | stem:[V] | stem:[V] | stem:[V]
 | stem:[V] | stem:[F] | stem:[F]
 | stem:[F] | stem:[V] | stem:[F]
@@ -62,12 +62,12 @@ true and true   # => true
 true and false  # => false
 ----
 
-=== Disyunción (stem:[\lor])
+=== Disyunción (stem:[\vee])
 Es el "o" de las posibilidades. Basta con que **al menos una** de las proposiciones sea verdadera para que todo el conjunto lo sea.
 
 [cols="^1,^1,^2", options="header"]
 |===
-| stem:[p] | stem:[q] | stem:[p \lor q]
+| stem:[p] | stem:[q] | stem:[p \vee q]
 | stem:[V] | stem:[V] | stem:[V]
 | stem:[V] | stem:[F] | stem:[V]
 | stem:[F] | stem:[V] | stem:[V]
@@ -148,8 +148,8 @@ Existen ciertas formas de pensar que son, sin importar las circunstancias, siemp
 === Leyes de De Morgan
 Estas leyes nos enseñan cómo negar con elegancia pensamientos compuestos:
 
-1.  stem:[\neg(p \land q) \equiv \neg p \lor \neg q]
-2.  stem:[\neg(p \lor q) \equiv \neg p \land \neg q]
+1.  stem:[\neg(p \wedge q) \equiv \neg p \vee \neg q]
+2.  stem:[\neg(p \vee q) \equiv \neg p \wedge \neg q]
 
 [source, elixir]
 ----
@@ -174,10 +174,10 @@ not a and not b
 | Nombre | Expresión
 
 | **Identidad**
-| stem:[p \lor F \equiv p] ; stem:[p \land V \equiv p]
+| stem:[p \vee F \equiv p] ; stem:[p \wedge V \equiv p]
 
 | **Dominación**
-| stem:[p \lor V \equiv V] ; stem:[p \land F \equiv F]
+| stem:[p \vee V \equiv V] ; stem:[p \wedge F \equiv F]
 
 | **Doble Negación**
 | stem:[\neg(\neg p) \equiv p]
@@ -186,7 +186,7 @@ not a and not b
 | stem:[(p \to q) \equiv (\neg q \to \neg p)]
 
 | **Modus Ponens**
-| stem:[(p \land (p \to q)) \to q]
+| stem:[(p \wedge (p \to q)) \to q]
 |===
 
 [TIP]
